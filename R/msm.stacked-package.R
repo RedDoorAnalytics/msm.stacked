@@ -7,7 +7,7 @@
 #'   a given time.
 #' @docType package
 #' @author Alessandro Gasparini (alessandro.gasparini@@reddooranalytics.se)
-#' @import msm ggplot2
+#' @import ggplot2 msm rlang
 NULL
 
 # Quiets concerns of R CMD check re: variable names used internally

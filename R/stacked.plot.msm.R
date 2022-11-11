@@ -4,6 +4,8 @@
 #'   probabilities plots for multistate models fitted using the {msm} package.
 #'
 #' @param ... Arguments passed onto [stacked.data.msm()].
+#' @param tseqn Numeric value denoting how _smooth_ the curves should be over time, defaulting to 50.
+#'   Please see documentation for the [stacked.data.msm()] function for more details.
 #' @param plab A string denoting the label of each facet. Defaults to "From".
 #' @param xlab A string denoting the label of the horizontal axis. Defaults to "Time".
 #' @param ylab A string denoting the label of the vertical axis. Defaults to "Probability".
@@ -70,7 +72,7 @@
 #' stacked.plot.msm(model = cav.msm.cov, tstart = 0, tforward = 5, covariates = list(sex = 1))
 #'
 #' # The three plots should be different!
-stacked.plot.msm <- function(..., plab = "From", xlab = "Time", ylab = "Probability", start0 = TRUE) {
+stacked.plot.msm <- function(..., tseqn = 50, plab = "From", xlab = "Time", ylab = "Probability", start0 = TRUE) {
   # Check arguments
   arg_checks <- checkmate::makeAssertCollection()
   # 'plab', 'ylab', 'xlab' must be a single string
@@ -83,7 +85,7 @@ stacked.plot.msm <- function(..., plab = "From", xlab = "Time", ylab = "Probabil
   if (!arg_checks$isEmpty()) checkmate::reportAssertions(arg_checks)
 
   # Get predictions
-  preds <- stacked.data.msm(...)
+  preds <- stacked.data.msm(..., tseqn = tseqn)
 
   # Process labels for facets
   names(preds)[names(preds) == "from"] <- plab

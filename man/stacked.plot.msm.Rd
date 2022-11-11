@@ -6,6 +6,7 @@
 \usage{
 stacked.plot.msm(
   ...,
+  tseqn = 50,
   plab = "From",
   xlab = "Time",
   ylab = "Probability",
@@ -14,6 +15,9 @@ stacked.plot.msm(
 }
 \arguments{
 \item{...}{Arguments passed onto \code{\link[=stacked.data.msm]{stacked.data.msm()}}.}
+
+\item{tseqn}{Numeric value denoting how \emph{smooth} the curves should be over time, defaulting to 50.
+Please see documentation for the \code{\link[=stacked.data.msm]{stacked.data.msm()}} function for more details.}
 
 \item{plab}{A string denoting the label of each facet. Defaults to "From".}
 

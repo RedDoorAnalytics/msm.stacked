@@ -13,8 +13,7 @@
 #'   to be calculated for. For instance, if `tstart = t0` and `tforward = t1`, predictions
 #'   will be computed up to time `t0 + t1`.
 #' @param tseqn Numeric value denoting how many sub-intervals to use between `tstart` and
-#'   `tstart + tforward`, defaulting to 10. A larger number of `tnseq` will lead to smoother plots once using
-#'   the [stacked.plot.msm()] function.
+#'   `tstart + tforward`, defaulting to 5.
 #' @param ... Additional arguments to be passed to [msm::pmatrix.msm()]. This is useful,
 #'   for example, if calculating predictions for a certain covariates pattern - otherwise,
 #'   as in [msm::pmatrix.msm()], predictions will be assuming means of the covariates in

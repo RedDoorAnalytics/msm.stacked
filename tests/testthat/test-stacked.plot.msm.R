@@ -11,7 +11,8 @@ cav.msm <- msm(
   subject = PTNUM,
   data = cav,
   qmatrix = twoway4.q,
-  deathexact = 4
+  deathexact = 4,
+  fixedpars = TRUE # only to speed up examples!
 )
 
 test_that("Error checks", {

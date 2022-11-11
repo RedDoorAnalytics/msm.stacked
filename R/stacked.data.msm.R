@@ -49,7 +49,8 @@
 #'   subject = PTNUM,
 #'   data = cav,
 #'   qmatrix = twoway4.q,
-#'   deathexact = 4
+#'   deathexact = 4,
+#'   fixedpars = TRUE # only to speed up examples!
 #' )
 #'
 #' # Predictions from time 0 to time 1, with 3 mid-points:
@@ -68,7 +69,8 @@
 #'   data = cav,
 #'   covariates = ~sex,
 #'   qmatrix = twoway4.q,
-#'   deathexact = 4
+#'   deathexact = 4,
+#'   fixedpars = TRUE # only to speed up examples!
 #' )
 #'
 #' # Predictions from time 0 to time 5, mean covariates values:

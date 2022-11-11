@@ -33,7 +33,8 @@
 #'   subject = PTNUM,
 #'   data = cav,
 #'   qmatrix = twoway4.q,
-#'   deathexact = 4
+#'   deathexact = 4,
+#'   fixedpars = TRUE # only to speed up examples!
 #' )
 #'
 #' # Stacked probablities plot from 0 to 5:
@@ -55,7 +56,8 @@
 #'   data = cav,
 #'   covariates = ~sex,
 #'   qmatrix = twoway4.q,
-#'   deathexact = 4
+#'   deathexact = 4,
+#'   fixedpars = TRUE # only to speed up examples!
 #' )
 #'
 #' # Stacked probabilities plot, from time 0 to time 5, mean covariates values:

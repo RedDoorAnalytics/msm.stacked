@@ -40,7 +40,7 @@ head(cav)
 
 Further details on this example dataset are included in the [vignette of
 the {msm}
-package](https://cran.r-project.org/web/packages/msm/vignettes/msm-manual.pdf).
+package](https://CRAN.R-project.org/package=msm/vignettes/msm-manual.pdf).
 
 We start by a matrix of possible transitions:
 

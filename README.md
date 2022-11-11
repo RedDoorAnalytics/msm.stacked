@@ -298,3 +298,84 @@ stacked.plot.msm(model = cav.msm.cov, tstart = 0, tforward = 5, covariates = lis
 This way we can provide clinically meaningful predictions that highlight
 the effect of covariates of interest on state occupancy probabilities
 over time.
+
+# Model with Piecewise-Constant Intensities
+
+By default the {msm} package assumes constant (i.e., exponential)
+baseline transition intensities. This means that predictions at t years
+will be the same, irrespectively of when the starting point is:
+
+``` r
+stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 3)
+```
+
+<img src="man/figures/README-stacked.plot.two.times-1.png" width="100%" />
+
+``` r
+stacked.plot.msm(model = cav.msm, tstart = 5, tforward = 3, start0 = FALSE)
+```
+
+<img src="man/figures/README-stacked.plot.two.times-2.png" width="100%" />
+
+We can relax this assumption by allowing piecewise-constant baseline
+transition rates. This can be done by setting the `pci` argument of
+`msm()`:
+
+``` r
+cav.msm.pw <- msm(
+  formula = state ~ years,
+  subject = PTNUM,
+  data = cav,
+  qmatrix = twoway4.q,
+  deathexact = 4,
+  pci = quantile(x = cav$years, probs = c(0.25, 0.50, 0.75))
+)
+#> Warning in msm(formula = state ~ years, subject = PTNUM, data = cav, qmatrix =
+#> twoway4.q, : Optimisation has probably not converged to the maximum likelihood -
+#> Hessian is not positive definite.
+cav.msm.pw
+#> 
+#> Call:
+#> msm(formula = state ~ years, subject = PTNUM, data = cav, qmatrix = twoway4.q,     deathexact = 4, pci = quantile(x = cav$years, probs = c(0.25,         0.5, 0.75)))
+#> 
+#> Optimisation probably not converged to the maximum likelihood.
+#> optim() reported convergence but estimated Hessian not positive-definite.
+#> 
+#> -2 * log-likelihood:  3887.911
+```
+
+Specifically, here we set cutpoints at quartiles of the observed
+distribution of (possibly censored) transition times. We ignore the
+warning about *non-convergence* for now - in practice, we should
+investigate this and try a different optimiser or “consider tightening
+the tolerance criteria for convergence” (according to the documentation
+of `msm()`).
+
+First, we can do a likelihood ratio test to check whether the model with
+piecewise-constant intensities fits the data better:
+
+``` r
+lrtest.msm(cav.msm, cav.msm.pw)
+#>            -2 log LR df            p
+#> cav.msm.pw   80.8872 21 5.736045e-09
+```
+
+The test results statistically significant at any usual level, thus the
+more flexible model seems appropriate. Predictions of state occupancy
+probabilities will not depent on the starting point:
+
+``` r
+stacked.plot.msm(model = cav.msm.pw, tstart = 0, tforward = 3)
+```
+
+<img src="man/figures/README-stacked.plot.two.times.pw-1.png" width="100%" />
+
+``` r
+stacked.plot.msm(model = cav.msm.pw, tstart = 5, tforward = 3, start0 = FALSE)
+```
+
+<img src="man/figures/README-stacked.plot.two.times.pw-2.png" width="100%" />
+
+As expected, we see that the predicted state occupancy probabilities
+between 0 and 3 years are now different compared to those between 5 and
+8 years, given the (now) non-constant baseline intensities.

@@ -28,3 +28,13 @@ stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 5)
 # Automatic stacked plot
 stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 2, tseqn = 10)
 stacked.plot.msm(model = cav.msm, tstart = 1, tforward = 2, tseqn = 10)
+
+#
+cav.msm <- msm(
+  formula = state ~ years,
+  subject = PTNUM,
+  data = cav,
+  covariates = ~sex,
+  qmatrix = twoway4.q,
+  deathexact = 4
+)

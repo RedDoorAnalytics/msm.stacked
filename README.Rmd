@@ -1,5 +1,7 @@
 ---
 output: github_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -9,7 +11,10 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  fig.align = "center",
+  out.width = "100%",
+  dpi = 300,
+  dev = "ragg_png"
 )
 ```
 
@@ -28,3 +33,137 @@ You can install the development version of {msm.stacked} from [GitHub](https://g
 # install.packages("devtools")
 devtools::install_github("RedDoorAnalytics/msm.stacked")
 ```
+
+# Example
+
+To illustrate the functionality of {msm.stacked}, we build upon the documentation for the `msm::msm()` function.
+We will be using the heart transplant data:
+
+```{r data}
+library(msm)
+head(cav)
+```
+
+Further details on this example dataset are included in the [vignette of the {msm} package](https://cran.r-project.org/web/packages/msm/vignettes/msm-manual.pdf).
+
+We start by a matrix of possible transitions:
+
+```{r twoway}
+twoway4.q <- rbind(
+  c(-0.5, 0.25, 0, 0.25),
+  c(0.166, -0.498, 0.166, 0.166),
+  c(0, 0.25, -0.5, 0.25),
+  c(0, 0, 0, 0)
+)
+twoway4.q
+```
+
+This is then used to provide starting values for the model without any additional covariate:
+
+```{r fit}
+cav.msm <- msm(
+  formula = state ~ years,
+  subject = PTNUM,
+  data = cav,
+  qmatrix = twoway4.q,
+  deathexact = 4
+)
+cav.msm
+```
+
+We can use the `plot.msm()` function to plot survival curves from every transient state to the final, absorbing state (e.g., a state denoting death).
+This is denoted in the `cav` dataset by _state 4_:
+
+```{r plot.msm}
+#| out.width = "70%"
+plot(cav.msm, from = 1:3, to = 4)
+```
+
+The {msm} package also provides functionality to calculate state occupancy probabilities at a given point in time.
+Say we are interested in estimating the probability of being in a given state, from each state, five years after baseline; we can use the `pmatrix.msm()` function to obtain just that:
+
+```{r pmatrix.msm}
+pmatrix.msm(x = cav.msm, t = 5)
+```
+
+This shows that, for instance, study participants in State 1 at time zero have (approximately) a 52% probability of still being in State 5 after years, 14% probability of being in State 2, 9% probability of being in State 3, and 25% probability of being in State 4.
+
+We can repeatedly call the `pmatrix.msm()` function to obtain state occupancy probabilities over time, but that's a bit tedious. 
+This is where the {msm.stacked} package comes handy.
+
+Specifically, we can use the `stacked.data.msm()` function to calculate state occupancy probabilities over time, say, at 1 to 5 years:
+
+```{r stacked.data.all}
+library(msm.stacked)
+sdd <- stacked.data.msm(model = cav.msm, tstart = 0, tforward = 5, tseqn = 6)
+str(sdd)
+```
+
+This returns a tidy dataset with all state occupancy probabilities, from and to every state, over `tseqn = 6` equally-spaced time intervals between time zero and time five. 
+Focussing on transitions from State 1 only:
+
+```{r stacked.data.from1}
+subset(sdd, sdd$from == "State 1")
+```
+
+Here we see, for instance, that the probability of still being in State 1, starting from State 1, is 85% after one year, 74% after two years, 65% after three years, 58% after four years, and 52% after five years:
+
+```{r stacked.data.from1.to1}
+subset(sdd, sdd$from == "State 1" & sdd$to == "State 1")
+```
+
+The package also provides functionality to automatically produce stacked probabilities plots, for state occupancy probabilities from and to every state.
+This is implemented in the `stacked.plot.msm()` function:
+
+```{r stacked.plot}
+stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 5)
+```
+
+This relies on [{ggplot2}](https://ggplot2.tidyverse.org) functionality and returns a standard `ggplot` object, which can of course be further customised beyond the default settings:
+
+```{r stacked.plot.custom}
+library(ggplot2)
+
+stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 5) +
+  scale_fill_viridis_d(option = "plasma") +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  labs(fill = "To:")
+```
+
+# Model with Covariates
+
+We can of course incorporate covariates in a multistate model and obtain predictions for a specific covariates pattern; let's demonstrate this by incorporating sex in the model above.
+First, we fit a second model:
+
+```{r fit.cov}
+cav.msm.cov <- msm(
+  formula = state ~ years,
+  subject = PTNUM,
+  data = cav,
+  covariates = ~sex,
+  qmatrix = twoway4.q,
+  deathexact = 4
+)
+cav.msm.cov
+```
+
+Then, we can use the same functionality as before to obtain stacked probabilities plots:
+
+```{r stacked.plot.cov}
+stacked.plot.msm(model = cav.msm.cov, tstart = 0, tforward = 5)
+```
+
+By default, this will set all covariates to their average value (as in `pmatrix.msm()`); we can, however, pass specific covariates patterns that we want to predict for:
+
+```{r stacked.plot.cov.sex0}
+stacked.plot.msm(model = cav.msm.cov, tstart = 0, tforward = 5, covariates = list(sex = 0)) +
+  labs(caption = "Predictions for 'sex = 0'")
+```
+
+```{r stacked.plot.cov.sex1}
+stacked.plot.msm(model = cav.msm.cov, tstart = 0, tforward = 5, covariates = list(sex = 1)) +
+  labs(caption = "Predictions for 'sex = 1'")
+```
+
+This way we can provide clinically meaningful predictions that highlight the effect of covariates of interest on state occupancy probabilities over time.

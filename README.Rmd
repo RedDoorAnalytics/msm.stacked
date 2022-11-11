@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The {msm.stacked} package can be used to simplify the creation of stacked probabilities plot from multi-state model fits from the [{msm}](https://CRAN.R-project.org/package=msm) package.
+The {msm.stacked} package can be used to simplify the calculation of state transition probabilities over time and the creation of stacked probabilities plot from multi-state model fits from the [{msm}](https://CRAN.R-project.org/package=msm) package.
 
 # Installation
 
@@ -45,7 +45,7 @@ head(cav)
 
 Further details on this example dataset are included in the [vignette of the {msm} package](https://CRAN.R-project.org/package=msm/vignettes/msm-manual.pdf).
 
-We start by a matrix of possible transitions:
+We start with a matrix of possible transitions:
 
 ```{r twoway}
 twoway4.q <- rbind(
@@ -77,7 +77,7 @@ This is denoted in the `cav` dataset by _state 4_:
 plot(cav.msm, from = 1:3, to = 4)
 ```
 
-The {msm} package also provides functionality to calculate state occupancy probabilities at a given point in time.
+The {msm} package also provides functionality to calculate state transition probabilities at a given point in time.
 Say we are interested in estimating the probability of being in a given state, from each state, five years after baseline; we can use the `pmatrix.msm()` function to obtain just that:
 
 ```{r pmatrix.msm}
@@ -86,10 +86,10 @@ pmatrix.msm(x = cav.msm, t = 5)
 
 This shows that, for instance, study participants in State 1 at time zero have (approximately) a 52% probability of still being in State 5 after years, 14% probability of being in State 2, 9% probability of being in State 3, and 25% probability of being in State 4.
 
-We can repeatedly call the `pmatrix.msm()` function to obtain state occupancy probabilities over time, but that's a bit tedious. 
-This is where the {msm.stacked} package comes handy.
+We can repeatedly call the `pmatrix.msm()` function to obtain probabilities over time, but that's a bit tedious. 
+This is where the {msm.stacked} package comes in handy.
 
-Specifically, we can use the `stacked.data.msm()` function to calculate state occupancy probabilities over time, say, at 1 to 5 years:
+Specifically, we can use the `stacked.data.msm()` function to calculate transition probabilities over time, say, at 1 to 5 years:
 
 ```{r stacked.data.all}
 library(msm.stacked)
@@ -97,7 +97,7 @@ sdd <- stacked.data.msm(model = cav.msm, tstart = 0, tforward = 5, tseqn = 6)
 str(sdd)
 ```
 
-This returns a tidy dataset with all state occupancy probabilities, from and to every state, over `tseqn = 6` equally-spaced time intervals between time zero and time five. 
+This returns a tidy dataset with all transition probabilities, from and to every state, over `tseqn = 6` equally-spaced time intervals between time zero and time five. 
 Focussing on transitions from State 1 only:
 
 ```{r stacked.data.from1}
@@ -110,7 +110,7 @@ Here we see, for instance, that the probability of still being in State 1, start
 subset(sdd, sdd$from == "State 1" & sdd$to == "State 1")
 ```
 
-The package also provides functionality to automatically produce stacked probabilities plots, for state occupancy probabilities from and to every state.
+The package also provides functionality to automatically produce stacked probabilities plots, for transition probabilities from and to every state.
 This is implemented in the `stacked.plot.msm()` function:
 
 ```{r stacked.plot}
@@ -169,7 +169,7 @@ This way we can provide clinically meaningful predictions that highlight the eff
 
 # Model with Piecewise-Constant Intensities
 
-By default the {msm} package assumes constant (i.e., exponential) baseline transition intensities.
+By default, the {msm} package assumes constant (i.e., exponential) baseline transition intensities.
 This means that predictions at t years will be the same, irrespectively of when the starting point is:
 
 ```{r stacked.plot.two.times}
@@ -192,7 +192,7 @@ cav.msm.pw <- msm(
 cav.msm.pw
 ```
 
-Specifically, here we set cutpoints at quartiles of the observed distribution of (possibly censored) transition times.
+Specifically, here we set cut-points at quartiles of the observed distribution of (possibly censored) transition times.
 We ignore the warning about _non-convergence_ for now - in practice, we should investigate this and try a different optimiser or "consider tightening the tolerance criteria for convergence" (according to the documentation of `msm()`).
 
 First, we can do a likelihood ratio test to check whether the model with piecewise-constant intensities fits the data better:
@@ -201,12 +201,12 @@ First, we can do a likelihood ratio test to check whether the model with piecewi
 lrtest.msm(cav.msm, cav.msm.pw)
 ```
 
-The test results statistically significant at any usual level, thus the more flexible model seems appropriate.
-Predictions of state occupancy probabilities will not depend on the starting point:
+The test is statistically significant at any usual level, thus the more flexible model seems appropriate.
+Predictions of transition probabilities will now depend on the starting point `tstart`, even though `tforward` is the same:
 
 ```{r stacked.plot.two.times.pw}
 stacked.plot.msm(model = cav.msm.pw, tstart = 0, tforward = 3)
 stacked.plot.msm(model = cav.msm.pw, tstart = 5, tforward = 3, start0 = FALSE)
 ```
 
-As expected, we see that the predicted state occupancy probabilities between 0 and 3 years are now different compared to those between 5 and 8 years, given the (now) non-constant baseline intensities. 
+As expected, we see that the predicted probabilities between 0 and 3 units of time are now different compared to those between 5 and 8, given the (now) non-constant baseline intensities. 

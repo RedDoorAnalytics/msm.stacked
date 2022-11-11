@@ -27,6 +27,13 @@ test_that("Error checks", {
   expect_error(object = stacked.data.msm(model = cav.msm, tstart = c(0, 1), tforward = 1))
   expect_error(object = stacked.data.msm(model = cav.msm, tstart = 0, tforward = c(0, 1)))
   expect_error(object = stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 10:20))
+
+  #
+  expect_error(object = stacked.data.msm(model = cav.msm, tstart = -1, tforward = 1))
+  expect_error(object = stacked.data.msm(model = cav.msm, tstart = 0, tforward = 0))
+  expect_error(object = stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = -1))
+  expect_error(object = stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 0))
+  expect_error(object = stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 1))
 })
 
 test_that("Output", {

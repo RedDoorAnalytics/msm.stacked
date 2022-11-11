@@ -29,6 +29,13 @@ test_that("Error checks", {
   expect_error(object = stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 10:20))
 
   #
+  expect_error(object = stacked.plot.msm(model = cav, msm, tstart = -1, tforward = 1))
+  expect_error(object = stacked.plot.msm(model = cav, msm, tstart = 0, tforward = 0))
+  expect_error(object = stacked.plot.msm(model = cav, msm, tstart = 0, tforward = 1, tseqn = -1))
+  expect_error(object = stacked.plot.msm(model = cav, msm, tstart = 0, tforward = 1, tseqn = 0))
+  expect_error(object = stacked.plot.msm(model = cav, msm, tstart = 0, tforward = 1, tseqn = 1))
+
+  #
   expect_error(object = stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 1, plab = 1))
   expect_error(object = stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 1, plab = TRUE))
   expect_error(object = stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 1, ylab = 1))

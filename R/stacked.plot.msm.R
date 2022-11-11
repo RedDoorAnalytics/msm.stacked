@@ -4,6 +4,9 @@
 #'   probabilities plots for multi-state model fits from the {msm} package.
 #'
 #' @param ... Arguments passed onto [stacked.data.msm()].
+#' @param exclude Define a state to exclude from the possible starting states. This is useful to, e.g.,
+#'   exclude an absorbing state from the plot. Defaults to `NULL`, in which case all states will be
+#'   plotted.
 #' @param tseqn Numeric value denoting how _smooth_ the curves should be over time, defaulting to 50.
 #'   Please see documentation for the [stacked.data.msm()] function for more details.
 #' @param plab A string denoting the label of each facet. Defaults to "From".
@@ -73,9 +76,13 @@
 #' stacked.plot.msm(model = cav.msm.cov, tstart = 0, tforward = 5, covariates = list(sex = 1))
 #'
 #' # The three plots should be different!
-stacked.plot.msm <- function(..., tseqn = 50, plab = "From", xlab = "Time", ylab = "Probability", start0 = TRUE) {
+stacked.plot.msm <- function(..., exclude = NULL, tseqn = 50, plab = "From", xlab = "Time", ylab = "Probability", start0 = TRUE) {
   # Check arguments
   arg_checks <- checkmate::makeAssertCollection()
+  # 'tseqn' must be a single number
+  checkmate::assert_number(x = tseqn, add = arg_checks, .var.name = "tseqn")
+  # 'tseqn' must be greater than one
+  checkmate::assert_true(x = (tseqn > 1), add = arg_checks, .var.name = "tseqn > 1")
   # 'plab', 'ylab', 'xlab' must be a single string
   checkmate::assert_string(x = plab, add = arg_checks, .var.name = "plab")
   checkmate::assert_string(x = ylab, add = arg_checks, .var.name = "ylab")

@@ -13,7 +13,7 @@
 #'   to be calculated for. For instance, if `tstart = t0` and `tforward = t1`, predictions
 #'   will be computed up to time `t0 + t1`.
 #' @param tseqn Numeric value denoting how many sub-intervals to use between `tstart` and
-#'   `tstart + tforward`, defaulting to 5.
+#'   `tstart + tforward`, defaulting to 5. This must be greater than one.
 #' @param ... Additional arguments to be passed to [msm::pmatrix.msm()]. This is useful,
 #'   for example, if calculating predictions for a certain covariates pattern - otherwise,
 #'   as in [msm::pmatrix.msm()], predictions will be assuming means of the covariates in
@@ -85,7 +85,7 @@
 #' all.equal(p3, p4)
 #' all.equal(p3, p5)
 #' all.equal(p4, p5)
-stacked.data.msm <- function(model, tstart, tforward, tseqn = 10, ...) {
+stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, ...) {
   # Check arguments
   arg_checks <- checkmate::makeAssertCollection()
   # 'model' must be of class 'msm'
@@ -94,6 +94,11 @@ stacked.data.msm <- function(model, tstart, tforward, tseqn = 10, ...) {
   checkmate::assert_number(x = tstart, add = arg_checks, .var.name = "tstart")
   checkmate::assert_number(x = tforward, add = arg_checks, .var.name = "tforward")
   checkmate::assert_number(x = tseqn, add = arg_checks, .var.name = "tseqn")
+  # 'tseqn' must be greater than one
+  checkmate::assert_true(x = (tseqn > 1), add = arg_checks, .var.name = "tseqn > 1")
+  # 'tstart', 'tforward' must be greater than zero
+  checkmate::assert_true(x = (tstart >= 0), add = arg_checks, .var.name = "tstart >= 0")
+  checkmate::assert_true(x = (tforward > 0), add = arg_checks, .var.name = "tforward > 0")
   # Report
   if (!arg_checks$isEmpty()) checkmate::reportAssertions(arg_checks)
 

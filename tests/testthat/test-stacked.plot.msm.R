@@ -14,10 +14,6 @@ cav.msm <- msm(
   deathexact = 4
 )
 
-
-stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 2, tseqn = 10)
-
-
 test_that("Error checks", {
   #
   expect_error(object = stacked.plot.msm())

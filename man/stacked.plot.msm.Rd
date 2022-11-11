@@ -6,6 +6,7 @@
 \usage{
 stacked.plot.msm(
   ...,
+  exclude = NULL,
   tseqn = 50,
   plab = "From",
   xlab = "Time",
@@ -15,6 +16,10 @@ stacked.plot.msm(
 }
 \arguments{
 \item{...}{Arguments passed onto \code{\link[=stacked.data.msm]{stacked.data.msm()}}.}
+
+\item{exclude}{Define a state to exclude from the possible starting states. This is useful to, e.g.,
+exclude an absorbing state from the plot. Defaults to \code{NULL}, in which case all states will be
+plotted.}
 
 \item{tseqn}{Numeric value denoting how \emph{smooth} the curves should be over time, defaulting to 50.
 Please see documentation for the \code{\link[=stacked.data.msm]{stacked.data.msm()}} function for more details.}

@@ -17,6 +17,8 @@ cav.msm <- msm(
   deathexact = 4
 )
 
+states.msm(cav.msm)
+
 plot(cav.msm)
 
 # Load
@@ -24,9 +26,10 @@ devtools::load_all()
 
 # Create a dataset with the predictions
 stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 5)
+stacked.data.msm(model = cav.msm, tstart = 0, tforward = 10)
 
 # Automatic stacked plot
-stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 2, tseqn = 10)
+stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 2, exclude = "State 4")
 stacked.plot.msm(model = cav.msm, tstart = 1, tforward = 2, tseqn = 10)
 
 #

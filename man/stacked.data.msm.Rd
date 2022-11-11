@@ -4,7 +4,7 @@
 \alias{stacked.data.msm}
 \title{Calculate State Occupancy Probabilities Over Time from and to Every State}
 \usage{
-stacked.data.msm(model, tstart, tforward, tseqn = 10, ...)
+stacked.data.msm(model, tstart, tforward, tseqn = 5, ...)
 }
 \arguments{
 \item{model}{A multi-state model fitted using \code{\link[msm:msm]{msm::msm()}}.}
@@ -19,7 +19,7 @@ to be calculated for. For instance, if \code{tstart = t0} and \code{tforward = t
 will be computed up to time \code{t0 + t1}.}
 
 \item{tseqn}{Numeric value denoting how many sub-intervals to use between \code{tstart} and
-\code{tstart + tforward}, defaulting to 5.}
+\code{tstart + tforward}, defaulting to 5. This must be greater than one.}
 
 \item{...}{Additional arguments to be passed to \code{\link[msm:pmatrix.msm]{msm::pmatrix.msm()}}. This is useful,
 for example, if calculating predictions for a certain covariates pattern - otherwise,

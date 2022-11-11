@@ -83,10 +83,11 @@ stacked.plot.msm <- function(..., exclude = NULL, tseqn = 50, plab = "From", xla
   checkmate::assert_number(x = tseqn, add = arg_checks, .var.name = "tseqn")
   # 'tseqn' must be greater than one
   checkmate::assert_true(x = (tseqn > 1), add = arg_checks, .var.name = "tseqn > 1")
-  # 'plab', 'ylab', 'xlab' must be a single string
+  # 'plab', 'ylab', 'xlab', 'exclude' must be a single string
   checkmate::assert_string(x = plab, add = arg_checks, .var.name = "plab")
   checkmate::assert_string(x = ylab, add = arg_checks, .var.name = "ylab")
   checkmate::assert_string(x = xlab, add = arg_checks, .var.name = "xlab")
+  checkmate::assert_string(x = exclude, add = arg_checks, null.ok = TRUE, .var.name = "exclude")
   # 'start0' must be a single logical value
   checkmate::assert_logical(x = start0, len = 1, add = arg_checks, .var.name = "start0")
   # Report
@@ -94,6 +95,11 @@ stacked.plot.msm <- function(..., exclude = NULL, tseqn = 50, plab = "From", xla
 
   # Get predictions
   preds <- stacked.data.msm(..., tseqn = tseqn)
+
+  # Exclude states if 'exclude' was defined
+  if (!is.null(exclude)) {
+    preds <- subset(preds, preds$from != exclude)
+  }
 
   # Process labels for facets
   names(preds)[names(preds) == "from"] <- plab

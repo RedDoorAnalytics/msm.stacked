@@ -101,7 +101,7 @@ death). This is denoted in the `cav` dataset by *state 4*:
 plot(cav.msm, from = 1:3, to = 4)
 ```
 
-<img src="man/figures/README-plot.msm-1.png" width="70%" style="display: block; margin: auto;" />
+<img src="man/figures/README-plot.msm-1.png" width="100%" />
 
 The {msm} package also provides functionality to calculate state
 occupancy probabilities at a given point in time. Say we are interested
@@ -199,7 +199,7 @@ state. This is implemented in the `stacked.plot.msm()` function:
 stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 5)
 ```
 
-<img src="man/figures/README-stacked.plot-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/README-stacked.plot-1.png" width="100%" />
 
 This relies on [{ggplot2}](https://ggplot2.tidyverse.org) functionality
 and returns a standard `ggplot` object, which can of course be further
@@ -215,7 +215,7 @@ stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 5) +
   labs(fill = "To:")
 ```
 
-<img src="man/figures/README-stacked.plot.custom-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/README-stacked.plot.custom-1.png" width="100%" />
 
 # Model with Covariates
 
@@ -271,10 +271,11 @@ Then, we can use the same functionality as before to obtain stacked
 probabilities plots:
 
 ``` r
-stacked.plot.msm(model = cav.msm.cov, tstart = 0, tforward = 5)
+stacked.plot.msm(model = cav.msm.cov, tstart = 0, tforward = 5) +
+  labs(title = "Predictions for average covariates")
 ```
 
-<img src="man/figures/README-stacked.plot.cov-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/README-stacked.plot.cov-1.png" width="100%" />
 
 By default, this will set all covariates to their average value (as in
 `pmatrix.msm()`); we can, however, pass specific covariates patterns
@@ -282,17 +283,17 @@ that we want to predict for:
 
 ``` r
 stacked.plot.msm(model = cav.msm.cov, tstart = 0, tforward = 5, covariates = list(sex = 0)) +
-  labs(caption = "Predictions for 'sex = 0'")
+  labs(title = "Predictions for 'sex = 0'")
 ```
 
-<img src="man/figures/README-stacked.plot.cov.sex0-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/README-stacked.plot.cov.sex0-1.png" width="100%" />
 
 ``` r
 stacked.plot.msm(model = cav.msm.cov, tstart = 0, tforward = 5, covariates = list(sex = 1)) +
-  labs(caption = "Predictions for 'sex = 1'")
+  labs(title = "Predictions for 'sex = 1'")
 ```
 
-<img src="man/figures/README-stacked.plot.cov.sex1-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/README-stacked.plot.cov.sex1-1.png" width="100%" />
 
 This way we can provide clinically meaningful predictions that highlight
 the effect of covariates of interest on state occupancy probabilities

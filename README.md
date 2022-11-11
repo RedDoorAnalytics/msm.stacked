@@ -6,8 +6,8 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The {msm.stacked} can be used to simplify the creation of stacked
-probabilities plot from multistate model fits from the
+The {msm.stacked} package can be used to simplify the creation of
+stacked probabilities plot from multi-state model fits from the
 [{msm}](https://CRAN.R-project.org/package=msm) package.
 
 # Installation
@@ -219,9 +219,10 @@ stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 5) +
 
 # Model with Covariates
 
-We can of course incorporate covariates in a multistate model and obtain
-predictions for a specific covariates pattern; let’s demonstrate this by
-incorporating sex in the model above. First, we fit a second model:
+We can of course incorporate covariates in a multi-state model and
+obtain predictions for a specific covariates pattern; let’s demonstrate
+this by incorporating sex in the model above. First, we fit a second
+model:
 
 ``` r
 cav.msm.cov <- msm(
@@ -362,7 +363,7 @@ lrtest.msm(cav.msm, cav.msm.pw)
 
 The test results statistically significant at any usual level, thus the
 more flexible model seems appropriate. Predictions of state occupancy
-probabilities will not depent on the starting point:
+probabilities will not depend on the starting point:
 
 ``` r
 stacked.plot.msm(model = cav.msm.pw, tstart = 0, tforward = 3)

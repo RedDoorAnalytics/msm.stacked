@@ -3,9 +3,9 @@
 \docType{package}
 \name{msm.stacked-package}
 \alias{msm.stacked-package}
-\title{Stacked Probabilities Plots for 'msm' Multistate Models}
+\title{Stacked Probabilities Plots and Transition Probabilities for 'msm' Multi-State Models}
 \description{
-Create stacked probabilities plots for multistate models fitted using
+Create stacked probabilities plots for multi-state models fitted using
 the 'msm' package. Plots are created using the 'ggplot2' package, and can be
 further customised by the user. State occupancy probabilities over time can also
 be calculated, including conditional predictions on being in a certain state at

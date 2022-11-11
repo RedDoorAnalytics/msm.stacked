@@ -1,10 +1,10 @@
 #' @title Calculate State Occupancy Probabilities Over Time from and to Every State
 #'
 #' @description The [stacked.data.msm()] function can be used to calculate
-#'   state occupancy probabilities over time for multistate models fitted
+#'   state occupancy probabilities over time for multi-state models fitted
 #'   using the {msm} package.
 #'
-#' @param model A multistate model fitted using [msm::msm()].
+#' @param model A multi-state model fitted using [msm::msm()].
 #' @param tstart Numeric value denoting the starting time for calculating predictions.
 #'   It can be time zero (e.g., the beginning of the study) or it can be a given follow-up
 #'   time (e.g., one year after baseline) in which case predictions will be conditional on

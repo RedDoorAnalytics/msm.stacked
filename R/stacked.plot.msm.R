@@ -1,7 +1,7 @@
 #' @title Produce Stacked Probabilities Plots
 #'
 #' @description The [stacked.plot.msm()] function can be used to produce stacked
-#'   probabilities plots for multistate models fitted using the {msm} package.
+#'   probabilities plots for multi-state model fits from the {msm} package.
 #'
 #' @param ... Arguments passed onto [stacked.data.msm()].
 #' @param tseqn Numeric value denoting how _smooth_ the curves should be over time, defaulting to 50.
@@ -10,7 +10,8 @@
 #' @param xlab A string denoting the label of the horizontal axis. Defaults to "Time".
 #' @param ylab A string denoting the label of the vertical axis. Defaults to "Probability".
 #' @param start0 A boolean value denoting whether plots should start the horizontal axis
-#'   at time zero, irrespectively of `tstart`.
+#'   at time zero, irrespectively of `tstart`. See [stacked.data.msm()] for more details
+#'   on the `tstart` argument.
 #'
 #' @return A [ggplot2::ggplot()] object.
 #'

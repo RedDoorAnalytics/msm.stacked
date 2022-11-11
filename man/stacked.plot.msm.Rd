@@ -26,14 +26,15 @@ Please see documentation for the \code{\link[=stacked.data.msm]{stacked.data.msm
 \item{ylab}{A string denoting the label of the vertical axis. Defaults to "Probability".}
 
 \item{start0}{A boolean value denoting whether plots should start the horizontal axis
-at time zero, irrespectively of \code{tstart}.}
+at time zero, irrespectively of \code{tstart}. See \code{\link[=stacked.data.msm]{stacked.data.msm()}} for more details
+on the \code{tstart} argument.}
 }
 \value{
 A \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} object.
 }
 \description{
 The \code{\link[=stacked.plot.msm]{stacked.plot.msm()}} function can be used to produce stacked
-probabilities plots for multistate models fitted using the {msm} package.
+probabilities plots for multi-state model fits from the {msm} package.
 }
 \examples{
 

@@ -1,6 +1,6 @@
 Package: msm.stacked
 Type: Package
-Title: Stacked Probabilities Plots for 'msm' Multistate Models
+Title: Stacked Probabilities Plots and Transition Probabilities for 'msm' Multi-State Models
 Version: 0.0.0.9000
 Authors@R: c(
   person(given = "Alessandro", 
@@ -9,7 +9,7 @@ Authors@R: c(
          role = c("aut", "cre")),
   person("Red Door Analytics AB", role = c("cph"))
   )
-Description: Create stacked probabilities plots for multistate models fitted using
+Description: Create stacked probabilities plots for multi-state models fitted using
     the 'msm' package. Plots are created using the 'ggplot2' package, and can be
     further customised by the user. State occupancy probabilities over time can also
     be calculated, including conditional predictions on being in a certain state at 
@@ -23,9 +23,10 @@ Imports:
   ggplot2,
   msm,
   rlang (>= 0.4.0)
+Suggests:
+  testthat (>= 3.0.0)
 URL: https://github.com/RedDoorAnalytics/msm.stacked
 BugReports: https://github.com/RedDoorAnalytics/msm.stacked/issues
 Roxygen: list(markdown = TRUE)
-Suggests: 
-    testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Language: en-GB

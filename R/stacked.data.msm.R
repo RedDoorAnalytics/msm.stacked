@@ -32,8 +32,20 @@
 #'
 #' @export
 stacked.data.msm <- function(model, tstart, tforward, tseqn = 10, ...) {
+  # Check arguments
+  arg_checks <- checkmate::makeAssertCollection()
+  # 'model' must be of class 'msm'
+  checkmate::assert_class(x = model, classes = "msm", add = arg_checks, .var.name = "model")
+  # 'tstart', 'tforward', 'tseq', 'ref' must be a single number
+  checkmate::assert_number(x = tstart, add = arg_checks, .var.name = "tstart")
+  checkmate::assert_number(x = tforward, add = arg_checks, .var.name = "tforward")
+  checkmate::assert_number(x = tseqn, add = arg_checks, .var.name = "tseqn")
+  # Report
+  if (!arg_checks$isEmpty()) checkmate::reportAssertions(arg_checks)
+
   # Sequence of `tseqn` equally-spaced points for forward predictions
   tseq <- seq(0, tforward, length.out = tseqn)
+
   # Calculate pmatrix at each time point forward
   preds <- lapply(X = tseq, FUN = function(.t) {
     out <- msm::pmatrix.msm(x = model, t = .t, t1 = tstart, ...)
@@ -46,8 +58,10 @@ stacked.data.msm <- function(model, tstart, tforward, tseqn = 10, ...) {
     out[["t"]] <- .t
     return(out)
   })
+
   # Bind rows
   preds <- do.call(rbind.data.frame, preds)
+
   # Return data
   return(preds)
 }

@@ -23,8 +23,7 @@ plot(cav.msm)
 devtools::load_all()
 
 # Create a dataset with the predictions
-df <- stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 5)
-df
+stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 5)
 
 # Automatic stacked plot
 stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 2, tseqn = 10)

@@ -1,4 +1,4 @@
-#' @name msm.stacked_package
+#' @name msm.stacked-package
 #' @title Stacked Probabilities Plots for 'msm' Multistate Models
 #' @description Create stacked probabilities plots for multistate models fitted using
 #'   the 'msm' package. Plots are created using the 'ggplot2' package, and can be

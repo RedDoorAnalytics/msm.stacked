@@ -7,8 +7,8 @@
 stacked.plot.msm(
   ...,
   plab = "From",
-  ylab = "Time",
-  xlab = "Probability",
+  xlab = "Time",
+  ylab = "Probability",
   start0 = TRUE
 )
 }
@@ -17,9 +17,9 @@ stacked.plot.msm(
 
 \item{plab}{A string denoting the label of each facet. Defaults to "From".}
 
-\item{ylab}{A string denoting the label of the vertical axis. Defaults to "Probability".}
-
 \item{xlab}{A string denoting the label of the horizontal axis. Defaults to "Time".}
+
+\item{ylab}{A string denoting the label of the vertical axis. Defaults to "Probability".}
 
 \item{start0}{A boolean value denoting whether plots should start the horizontal axis
 at time zero, irrespectively of \code{tstart}.}

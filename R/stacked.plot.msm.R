@@ -5,8 +5,8 @@
 #'
 #' @param ... Arguments passed onto [stacked.data.msm()].
 #' @param plab A string denoting the label of each facet. Defaults to "From".
-#' @param ylab A string denoting the label of the vertical axis. Defaults to "Probability".
 #' @param xlab A string denoting the label of the horizontal axis. Defaults to "Time".
+#' @param ylab A string denoting the label of the vertical axis. Defaults to "Probability".
 #' @param start0 A boolean value denoting whether plots should start the horizontal axis
 #'   at time zero, irrespectively of `tstart`.
 #'
@@ -70,7 +70,7 @@
 #' stacked.plot.msm(model = cav.msm.cov, tstart = 0, tforward = 5, covariates = list(sex = 1))
 #'
 #' # The three plots should be different!
-stacked.plot.msm <- function(..., plab = "From", ylab = "Time", xlab = "Probability", start0 = TRUE) {
+stacked.plot.msm <- function(..., plab = "From", xlab = "Time", ylab = "Probability", start0 = TRUE) {
   # Check arguments
   arg_checks <- checkmate::makeAssertCollection()
   # 'plab', 'ylab', 'xlab' must be a single string

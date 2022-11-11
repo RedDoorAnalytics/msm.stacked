@@ -15,5 +15,9 @@ cav.msm <- msm(
 )
 
 # Create a dataset with the predictions
-df <- stacked.data(model = cav.msm, tstart = 0, tforward = 1, tseqn = 5)
+df <- stacked.msm.data(model = cav.msm, tstart = 0, tforward = 1, tseqn = 5)
 df
+
+# Automatic plot
+stacked.msm.plot(model = cav.msm, tstart = 0, tforward = 2, tseqn = 10)
+stacked.msm.plot(model = cav.msm, tstart = 1, tforward = 2, tseqn = 10)

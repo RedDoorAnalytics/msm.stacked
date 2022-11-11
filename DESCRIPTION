@@ -1,6 +1,6 @@
 Package: msm.stacked
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Stacked Probabilities Plots for 'msm' Multistate Models
 Version: 0.0.0.9000
 Authors@R: c(
   person(given = "Alessandro", 
@@ -9,11 +9,15 @@ Authors@R: c(
          role = c("aut", "cre")),
   person("Red Door Analytics AB", role = c("cph"))
   )
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: Create stacked probabilities plots for multistate models fitted using
+    the 'msm' package. Plots are created using the 'ggplot2' package, and can be
+    further customised by the user. State occupancy probabilities over time can also
+    be calculated, including conditional predictions on being in a certain state at 
+    a given time.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.1
 Imports:
+  ggplot2,
   msm

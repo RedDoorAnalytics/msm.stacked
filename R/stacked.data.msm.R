@@ -1,5 +1,5 @@
 #' @export
-stacked.data <- function(model, tstart, tforward, tseqn = 10, ...) {
+stacked.data.msm <- function(model, tstart, tforward, tseqn = 10, ...) {
   # Sequence of `tseqn` equally-spaced points for forward predictions
   tseq <- seq(0, tforward, length.out = tseqn)
   # Calculate pmatrix at each time point forward

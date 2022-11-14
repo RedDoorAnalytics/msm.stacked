@@ -40,5 +40,6 @@ states.msm <- function(model) {
   if (!arg_checks$isEmpty()) checkmate::reportAssertions(arg_checks)
 
   # Extract states
-  rownames(model$Qmatrices$baseline)
+  states <- rownames(model$Qmatrices$baseline)
+  return(states)
 }

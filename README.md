@@ -120,7 +120,7 @@ pmatrix.msm(x = cav.msm, t = 5)
 ```
 
 This shows that, for instance, study participants in State 1 at time
-zero have (approximately) a 52% probability of still being in State 5
+zero have (approximately) a 52% probability of still being in State 1
 after years, 14% probability of being in State 2, 9% probability of
 being in State 3, and 25% probability of being in State 4.
 
@@ -177,8 +177,9 @@ subset(sdd, sdd$from == "State 1")
 ```
 
 Here we see, for instance, that the probability of still being in State
-1, starting from State 1, is 85% after one year, 74% after two years,
-65% after three years, 58% after four years, and 52% after five years:
+1, starting from State 1, is (approximately) 85% after one year, 74%
+after two years, 65% after three years, 58% after four years, and 52%
+after five years:
 
 ``` r
 subset(sdd, sdd$from == "State 1" & sdd$to == "State 1")

@@ -210,3 +210,37 @@ stacked.plot.msm(model = cav.msm.pw, tstart = 5, tforward = 3, start0 = FALSE)
 ```
 
 As expected, we see that the predicted probabilities between 0 and 3 units of time are now different compared to those between 5 and 8, given the (now) non-constant baseline intensities. 
+
+# Excluding States
+
+The {msm.stacked} package also include functionality to calculate (and plot) transition probabilities from only certain states of interest.
+For instance, the models we fit in the previous examples includes an absorbing state, _State 4_, from which there will be no transitions.
+For this example, we will be using the model with constant baseline transition rates (`cav.msm`).
+
+Let's start with a utility function to determine the names of the state of a {msm} model fit.
+This is called `states.msm()`:
+
+```{r states}
+states.msm(cav.msm)
+```
+
+Now we have the correct names used by {msm} to define each state.
+Let's calculate transitions probabilities from all states, but excluding the absorbing _State 4_:
+
+```{r transitions.no.absorbing}
+stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 3, exclude = "State 4")
+```
+
+As you can see, transitions from the state passed to `exclude` are not reported.
+We can also exclude more than one state, for instance if we want to calculate only transitions from _State 1_:
+
+```{r transitions.only.one}
+stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 3, exclude = c("State 2", "State 3", "State 4"))
+```
+
+Of course, this functionality is also included in the plotting function:
+
+```{r plot.no.absorbing}
+stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 10, exclude = "State 4") +
+  theme(legend.position = "bottom")
+```

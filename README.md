@@ -381,3 +381,95 @@ stacked.plot.msm(model = cav.msm.pw, tstart = 5, tforward = 3, start0 = FALSE)
 As expected, we see that the predicted probabilities between 0 and 3
 units of time are now different compared to those between 5 and 8, given
 the (now) non-constant baseline intensities.
+
+# Excluding States
+
+The {msm.stacked} package also include functionality to calculate (and
+plot) transition probabilities from only certain states of interest. For
+instance, the models we fit in the previous examples includes an
+absorbing state, *State 4*, from which there will be no transitions. For
+this example, we will be using the model with constant baseline
+transition rates (`cav.msm`).
+
+Let’s start with a utility function to determine the names of the state
+of a {msm} model fit. This is called `states.msm()`:
+
+``` r
+states.msm(cav.msm)
+#> [1] "State 1" "State 2" "State 3" "State 4"
+```
+
+Now we have the correct names used by {msm} to define each state. Let’s
+calculate transitions probabilities from all states, but excluding the
+absorbing *State 4*:
+
+``` r
+stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 3, exclude = "State 4")
+#>       from      to           p tstart   t
+#> 1  State 1 State 1 1.000000000      0 0.0
+#> 2  State 2 State 1 0.000000000      0 0.0
+#> 3  State 3 State 1 0.000000000      0 0.0
+#> 4  State 1 State 2 0.000000000      0 0.0
+#> 5  State 2 State 2 1.000000000      0 0.0
+#> 6  State 3 State 2 0.000000000      0 0.0
+#> 7  State 1 State 3 0.000000000      0 0.0
+#> 8  State 2 State 3 0.000000000      0 0.0
+#> 9  State 3 State 3 1.000000000      0 0.0
+#> 10 State 1 State 4 0.000000000      0 0.0
+#> 11 State 2 State 4 0.000000000      0 0.0
+#> 12 State 3 State 4 0.000000000      0 0.0
+#> 13 State 1 State 1 0.921422669      0 0.5
+#> 14 State 2 State 1 0.093120696      0 0.5
+#> 15 State 3 State 1 0.003009286      0 0.5
+#> 16 State 1 State 2 0.052893658      0 0.5
+#> 17 State 2 State 2 0.745001419      0 0.5
+#> 18 State 3 State 2 0.050466555      0 0.5
+#> 19 State 1 State 3 0.004483375      0 0.5
+#> 20 State 2 State 3 0.132369477      0 0.5
+#> 21 State 3 State 3 0.808061596      0 0.5
+#> 22 State 1 State 4 0.021200298      0 0.5
+#> 23 State 2 State 4 0.029508408      0 0.5
+#> 24 State 3 State 4 0.138462563      0 0.5
+#> 25 State 1 State 1 0.853958721      0 1.0
+#> 26 State 2 State 1 0.155576908      0 1.0
+#> 27 State 3 State 1 0.009903994      0 1.0
+#> 28 State 1 State 2 0.088369526      0 1.0
+#> 29 State 2 State 2 0.566632840      0 1.0
+#> 30 State 3 State 2 0.078536913      0 1.0
+#> 31 State 1 State 3 0.014755432      0 1.0
+#> 32 State 2 State 3 0.205995634      0 1.0
+#> 33 State 3 State 3 0.659657266      0 1.0
+#> 34 State 1 State 4 0.042916321      0 1.0
+#> 35 State 2 State 4 0.071794618      0 1.0
+#> 36 State 3 State 4 0.251901827      0 1.0
+```
+
+As you can see, transitions from the state passed to `exclude` are not
+reported. We can also exclude more than one state, for instance if we
+want to calculate only transitions from *State 1*:
+
+``` r
+stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 3, exclude = c("State 2", "State 3", "State 4"))
+#>       from      to           p tstart   t
+#> 1  State 1 State 1 1.000000000      0 0.0
+#> 2  State 1 State 2 0.000000000      0 0.0
+#> 3  State 1 State 3 0.000000000      0 0.0
+#> 4  State 1 State 4 0.000000000      0 0.0
+#> 5  State 1 State 1 0.921422669      0 0.5
+#> 6  State 1 State 2 0.052893658      0 0.5
+#> 7  State 1 State 3 0.004483375      0 0.5
+#> 8  State 1 State 4 0.021200298      0 0.5
+#> 9  State 1 State 1 0.853958721      0 1.0
+#> 10 State 1 State 2 0.088369526      0 1.0
+#> 11 State 1 State 3 0.014755432      0 1.0
+#> 12 State 1 State 4 0.042916321      0 1.0
+```
+
+Of course, this functionality is also included in the plotting function:
+
+``` r
+stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 10, exclude = "State 4") +
+  theme(legend.position = "bottom")
+```
+
+<img src="man/figures/README-plot.no.absorbing-1.png" width="100%" />

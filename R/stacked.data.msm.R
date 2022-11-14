@@ -14,6 +14,10 @@
 #'   will be computed up to time `t0 + t1`.
 #' @param tseqn Numeric value denoting how many sub-intervals to use between `tstart` and
 #'   `tstart + tforward`, defaulting to 5. This must be greater than one.
+#' @param exclude Denotes a state (or more than one) for which transitions from such state are
+#'   to be excluded. This is useful, for example, to avoid returning transitions from an absorbing
+#'   state; the [states.msm()] function can be helpful to identify the names of the states for a
+#'   given model. The `exclude` parameter defaults to `NULL`, where all transitions are returned.
 #' @param ... Additional arguments to be passed to [msm::pmatrix.msm()]. This is useful,
 #'   for example, if calculating predictions for a certain covariates pattern - otherwise,
 #'   as in [msm::pmatrix.msm()], predictions will be assuming means of the covariates in
@@ -85,7 +89,19 @@
 #' all.equal(p3, p4)
 #' all.equal(p3, p5)
 #' all.equal(p4, p5)
-stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, ...) {
+#'
+#' ### Example 3:
+#' # Excluding transitions from a certain state, e.g., from State 4:
+#' stacked.data.msm(model = cav.msm.cov, tstart = 0, tforward = 5, exclude = "State 4")
+#'
+#' # Returning transitions from State 1 only:
+#' stacked.data.msm(
+#'   model = cav.msm.cov,
+#'   tstart = 0,
+#'   tforward = 5,
+#'   exclude = c("State 2", "State 3", "State 4")
+#' )
+stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, exclude = NULL, ...) {
   # Check arguments
   arg_checks <- checkmate::makeAssertCollection()
   # 'model' must be of class 'msm'
@@ -94,6 +110,8 @@ stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, ...) {
   checkmate::assert_number(x = tstart, add = arg_checks, .var.name = "tstart")
   checkmate::assert_number(x = tforward, add = arg_checks, .var.name = "tforward")
   checkmate::assert_number(x = tseqn, add = arg_checks, .var.name = "tseqn")
+  # 'exclude' must be a string (or vector of strings), but can be NULL
+  checkmate::assert_character(x = exclude, add = arg_checks, null.ok = TRUE, .var.name = "exclude")
   # 'tseqn' must be greater than one
   checkmate::assert_true(x = (tseqn > 1), add = arg_checks, .var.name = "tseqn > 1")
   # 'tstart', 'tforward' must be greater than zero
@@ -120,6 +138,14 @@ stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, ...) {
 
   # Bind rows
   preds <- do.call(rbind.data.frame, preds)
+
+  # Exclude states if 'exclude' was defined
+  if (!is.null(exclude)) {
+    preds <- subset(preds, !(preds$from %in% exclude))
+  }
+
+  # Remove row names
+  rownames(preds) <- NULL
 
   # Return data
   return(preds)

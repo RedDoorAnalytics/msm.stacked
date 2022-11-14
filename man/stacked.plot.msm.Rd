@@ -6,7 +6,6 @@
 \usage{
 stacked.plot.msm(
   ...,
-  exclude = NULL,
   tseqn = 50,
   plab = "From",
   xlab = "Time",
@@ -17,12 +16,9 @@ stacked.plot.msm(
 \arguments{
 \item{...}{Arguments passed onto \code{\link[=stacked.data.msm]{stacked.data.msm()}}.}
 
-\item{exclude}{Define a state to exclude from the possible starting states. This is useful to, e.g.,
-exclude an absorbing state from the plot. Defaults to \code{NULL}, in which case all states will be
-plotted.}
-
 \item{tseqn}{Numeric value denoting how \emph{smooth} the curves should be over time, defaulting to 50.
-Please see documentation for the \code{\link[=stacked.data.msm]{stacked.data.msm()}} function for more details.}
+Please see documentation for the \code{\link[=stacked.data.msm]{stacked.data.msm()}} function for more details, as it works
+in a similar way.}
 
 \item{plab}{A string denoting the label of each facet. Defaults to "From".}
 
@@ -95,6 +91,10 @@ stacked.plot.msm(model = cav.msm.cov, tstart = 0, tforward = 5, covariates = lis
 stacked.plot.msm(model = cav.msm.cov, tstart = 0, tforward = 5, covariates = list(sex = 1))
 
 # The three plots should be different!
+
+### Example 3:
+# We can exclude transitions from a certain state from the plot, e.g., from State 4:
+stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 5, exclude = "State 4")
 }
 \seealso{
 \code{\link[=stacked.data.msm]{stacked.data.msm()}}, \code{\link[msm:msm]{msm::msm()}}, \code{\link[msm:pmatrix.msm]{msm::pmatrix.msm()}}

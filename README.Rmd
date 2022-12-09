@@ -20,6 +20,8 @@ knitr::opts_chunk$set(
 # {msm.stacked}
 
 <!-- badges: start -->
+[![Codecov test coverage](https://codecov.io/gh/RedDoorAnalytics/msm.stacked/branch/main/graph/badge.svg)](https://app.codecov.io/gh/RedDoorAnalytics/msm.stacked?branch=main)
+[![R-CMD-check](https://github.com/RedDoorAnalytics/msm.stacked/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/RedDoorAnalytics/msm.stacked/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The {msm.stacked} package can be used to simplify the calculation of state transition probabilities over time and the creation of stacked probabilities plot from multi-state model fits from the [{msm}](https://CRAN.R-project.org/package=msm) package.

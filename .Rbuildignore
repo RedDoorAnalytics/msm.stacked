@@ -4,3 +4,5 @@
 ^README\.Rmd$
 ^testing\.R$
 ^Makefile$
+^codecov\.yml$
+^\.github$

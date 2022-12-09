@@ -4,6 +4,10 @@
 # {msm.stacked}
 
 <!-- badges: start -->
+
+[![Codecov test
+coverage](https://codecov.io/gh/RedDoorAnalytics/msm.stacked/branch/main/graph/badge.svg)](https://app.codecov.io/gh/RedDoorAnalytics/msm.stacked?branch=main)
+[![R-CMD-check](https://github.com/RedDoorAnalytics/msm.stacked/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/RedDoorAnalytics/msm.stacked/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The {msm.stacked} package can be used to simplify the calculation of

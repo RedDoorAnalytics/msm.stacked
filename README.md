@@ -5,8 +5,6 @@
 
 <!-- badges: start -->
 
-[![Codecov test
-coverage](https://codecov.io/gh/RedDoorAnalytics/msm.stacked/branch/main/graph/badge.svg)](https://app.codecov.io/gh/RedDoorAnalytics/msm.stacked?branch=main)
 [![R-CMD-check](https://github.com/RedDoorAnalytics/msm.stacked/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/RedDoorAnalytics/msm.stacked/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -18,7 +16,7 @@ probabilities plot from multi-state model fits from the
 # Installation
 
 You can install the development version of {msm.stacked} from
-[GitHub](https://github.com) with:
+[GitHub](https://github.com/RedDoorAnalytics/msm.stacked) with:
 
 ``` r
 # install.packages("devtools")
@@ -337,8 +335,8 @@ cav.msm.pw <- msm(
   pci = quantile(x = cav$years, probs = c(0.25, 0.50, 0.75))
 )
 #> Warning in msm(formula = state ~ years, subject = PTNUM, data = cav, qmatrix =
-#> twoway4.q, : Optimisation has probably not converged to the maximum likelihood -
-#> Hessian is not positive definite.
+#> twoway4.q, : Optimisation has probably not converged to the maximum likelihood
+#> - Hessian is not positive definite.
 cav.msm.pw
 #> 
 #> Call:
@@ -397,7 +395,8 @@ this example, we will be using the model with constant baseline
 transition rates (`cav.msm`).
 
 Let’s start with a utility function to determine the names of the state
-of a {msm} model fit. This is called `states.msm()`:
+of a {msm} model fit, which is included in {msm.stacked}. This is called
+`states.msm()`:
 
 ``` r
 states.msm(cav.msm)

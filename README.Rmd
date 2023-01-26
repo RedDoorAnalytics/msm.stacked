@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.path = "man/figures/README-",
   out.width = "100%",
-  dpi = 200,
+  dpi = 300,
   dev = "ragg_png"
 )
 ```
@@ -20,7 +20,6 @@ knitr::opts_chunk$set(
 # {msm.stacked}
 
 <!-- badges: start -->
-[![Codecov test coverage](https://codecov.io/gh/RedDoorAnalytics/msm.stacked/branch/main/graph/badge.svg)](https://app.codecov.io/gh/RedDoorAnalytics/msm.stacked?branch=main)
 [![R-CMD-check](https://github.com/RedDoorAnalytics/msm.stacked/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/RedDoorAnalytics/msm.stacked/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -28,7 +27,7 @@ The {msm.stacked} package can be used to simplify the calculation of state trans
 
 # Installation
 
-You can install the development version of {msm.stacked} from [GitHub](https://github.com) with:
+You can install the development version of {msm.stacked} from [GitHub](https://github.com/RedDoorAnalytics/msm.stacked) with:
 
 ```r
 # install.packages("devtools")
@@ -219,7 +218,7 @@ The {msm.stacked} package also include functionality to calculate (and plot) tra
 For instance, the models we fit in the previous examples includes an absorbing state, _State 4_, from which there will be no transitions.
 For this example, we will be using the model with constant baseline transition rates (`cav.msm`).
 
-Let's start with a utility function to determine the names of the state of a {msm} model fit.
+Let's start with a utility function to determine the names of the state of a {msm} model fit, which is included in {msm.stacked}.
 This is called `states.msm()`:
 
 ```{r states}

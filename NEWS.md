@@ -1,3 +1,7 @@
+# {msm.stacked} development version
+
+- Updated README file.
+
 # {msm.stacked} 0.0.1
 
 Initial release of the package. Currently, the following functions are included:

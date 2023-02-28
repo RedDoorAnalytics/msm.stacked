@@ -1,6 +1,7 @@
 # {msm.stacked} development version
 
 - Updated README file.
+- Updated copyright year.
 
 # {msm.stacked} 0.0.1
 

@@ -6,3 +6,7 @@
 ^Makefile$
 ^codecov\.yml$
 ^\.github$
+^p_stacked\.png$
+^p_stacked_square\.png$
+^website\.md$
+^website\.R$

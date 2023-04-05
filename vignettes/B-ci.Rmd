@@ -1,0 +1,103 @@
+---
+title: "Confidence Intervals for Transition Probabilities"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Confidence intervals for transition probabilities}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  out.width = "100%",
+  fig.width = 6,
+  fig.height = 4,
+  dpi = 300,
+  dev = "ragg_png"
+)
+```
+
+As of version 0.0.2, the {msm.stacked} package can produce confidence intervals for the transition probabilities over time as computed via the `stacked.data.msm()` function.
+
+To illustrate this functionality, we replicate the example from the introductory vignette:
+
+```{r replicate_example}
+library(msm)
+
+twoway4.q <- rbind(
+  c(-0.5, 0.25, 0, 0.25),
+  c(0.166, -0.498, 0.166, 0.166),
+  c(0, 0.25, -0.5, 0.25),
+  c(0, 0, 0, 0)
+)
+twoway4.q
+
+cav.msm <- msm(
+  formula = state ~ years,
+  subject = PTNUM,
+  data = cav,
+  qmatrix = twoway4.q,
+  deathexact = 4
+)
+cav.msm
+```
+
+If needed, check that vignette with the following R code:
+
+```r
+vignette("01-introduction", package = "msm.stacked")
+```
+
+As demonstrated there, we can use the `stacked.data.msm()` function to calculate transition probabilities over time, say, at 1 to 5 years:
+
+```{r stacked.data}
+library(msm.stacked)
+
+sdd <- stacked.data.msm(model = cav.msm, tstart = 0, tforward = 5, tseqn = 20)
+str(sdd)
+```
+
+With this data we could, for instance, plot this over time:
+
+```{r stacked.data.plot}
+library(ggplot2)
+
+ggplot(sdd, aes(x = t, y = p)) +
+  geom_line(aes(color = to)) +
+  facet_wrap(~from)
+```
+
+In the plot above, we can see transition probabilities over time from and to each state.
+We might however be interested in including pointwise confidence intervals, over time, to visualise uncertainty around our estimates.
+
+This can now be easily done using the new `ci` argument implemented in `stacked.data.msm()`:
+
+```{r stacked.data.ci}
+sdd.ci <- stacked.data.msm(model = cav.msm, tstart = 0, tforward = 5, tseqn = 20, ci = "normal")
+str(sdd.ci)
+```
+
+Note that now two additional columns are available, `conf.low` and `conf.high` for the lower and upper bound of pointwise confidence intervals, respectively.
+
+Here we use the `ci = "normal"` method, which, according to the documentation of {msm}, "_[...] calculate a confidence interval for the transition probabilities by simulating `B` random vectors from the asymptotic multivariate normal distribution implied by the maximum likelihood estimates (and covariance matrix) of the log transition intensities and covariate effects, then calculating the resulting transition probability matrix for each replicate._"
+This is discussed further in the paper by [Mandel (2013)](https://doi.org/10.1080/00031305.2013.783880).
+
+Other possible values for the `ci` argument are `ci = "bootstrap"`, where non-parametric boostrap refitting is used, and `ci = "none"` (the default), where no confidence intervals are calculated.
+Refer to the documentation of `msm::pmatrix.msm()` for more details.
+
+After calculating the confidence intervals, we can include those in a plot:
+
+```{r stacked.data.plot.ci}
+ggplot(sdd.ci, aes(x = t, y = p)) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = to), alpha = 0.2) +
+  geom_line(aes(color = to)) +
+  facet_wrap(~from)
+```
+
+# References
+
+* Mandel, M. (2013). "Simulation based confidence intervals for functions with complicated derivatives." The American Statistician 67(2):76-81

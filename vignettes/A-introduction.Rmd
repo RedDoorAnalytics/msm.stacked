@@ -1,0 +1,244 @@
+---
+title: "An Introduction to the {msm.stacked} Package"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{An introduction to the msm.stacked package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  out.width = "100%",
+  fig.width = 6,
+  fig.height = 4,
+  dpi = 300,
+  dev = "ragg_png"
+)
+```
+
+The {msm.stacked} package can be used to simplify the calculation of state transition probabilities over time and the creation of stacked probabilities plot from multi-state model fits from the [{msm}](https://CRAN.R-project.org/package=msm) package.
+Note that this vignette replicates the examples included in the README file on GitHub, available [here](https://github.com/RedDoorAnalytics/msm.stacked). 
+
+# Installation
+
+You can install the development version of {msm.stacked} from [GitHub](https://github.com/RedDoorAnalytics/msm.stacked) with:
+
+```r
+# install.packages("devtools")
+devtools::install_github("RedDoorAnalytics/msm.stacked")
+```
+
+# Example
+
+To illustrate the functionality of {msm.stacked}, we build upon the documentation for the `msm::msm()` function.
+We will be using the heart transplant data:
+
+```{r data}
+library(msm)
+head(cav)
+```
+
+Further details on this example dataset are included in the [vignette of the {msm} package](https://CRAN.R-project.org/package=msm/vignettes/msm-manual.pdf).
+
+We start with a matrix of possible transitions:
+
+```{r twoway}
+twoway4.q <- rbind(
+  c(-0.5, 0.25, 0, 0.25),
+  c(0.166, -0.498, 0.166, 0.166),
+  c(0, 0.25, -0.5, 0.25),
+  c(0, 0, 0, 0)
+)
+twoway4.q
+```
+
+This is then used to provide starting values for the model without any additional covariate:
+
+```{r fit}
+cav.msm <- msm(
+  formula = state ~ years,
+  subject = PTNUM,
+  data = cav,
+  qmatrix = twoway4.q,
+  deathexact = 4
+)
+cav.msm
+```
+
+We can use the `plot.msm()` function to plot survival curves from every transient state to the final, absorbing state (e.g., a state denoting death).
+This is denoted in the `cav` dataset by _state 4_:
+
+```{r plot.msm}
+plot(cav.msm, from = 1:3, to = 4)
+```
+
+The {msm} package also provides functionality to calculate state transition probabilities at a given point in time.
+Say we are interested in estimating the probability of being in a given state, from each state, five years after baseline; we can use the `pmatrix.msm()` function to obtain just that:
+
+```{r pmatrix.msm}
+pmatrix.msm(x = cav.msm, t = 5)
+```
+
+This shows that, for instance, study participants in State 1 at time zero have (approximately) a 52% probability of still being in State 1 after years, 14% probability of being in State 2, 9% probability of being in State 3, and 25% probability of being in State 4.
+
+We can repeatedly call the `pmatrix.msm()` function to obtain probabilities over time, but that's a bit tedious. 
+This is where the {msm.stacked} package comes in handy.
+
+Specifically, we can use the `stacked.data.msm()` function to calculate transition probabilities over time, say, at 1 to 5 years:
+
+```{r stacked.data.all}
+library(msm.stacked)
+sdd <- stacked.data.msm(model = cav.msm, tstart = 0, tforward = 5, tseqn = 6)
+str(sdd)
+```
+
+This returns a tidy dataset with all transition probabilities, from and to every state, over `tseqn = 6` equally-spaced time intervals between time zero and time five. 
+Focussing on transitions from State 1 only:
+
+```{r stacked.data.from1}
+subset(sdd, sdd$from == "State 1")
+```
+
+Here we see, for instance, that the probability of still being in State 1, starting from State 1, is (approximately) 85% after one year, 74% after two years, 65% after three years, 58% after four years, and 52% after five years:
+
+```{r stacked.data.from1.to1}
+subset(sdd, sdd$from == "State 1" & sdd$to == "State 1")
+```
+
+The package also provides functionality to automatically produce stacked probabilities plots, for transition probabilities from and to every state.
+This is implemented in the `stacked.plot.msm()` function:
+
+```{r stacked.plot}
+stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 5)
+```
+
+This relies on [{ggplot2}](https://ggplot2.tidyverse.org) functionality and returns a standard `ggplot` object, which can of course be further customised beyond the default settings:
+
+```{r stacked.plot.custom}
+library(ggplot2)
+
+stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 5) +
+  scale_fill_viridis_d(option = "plasma") +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  labs(fill = "To:")
+```
+
+# Model with Covariates
+
+We can of course incorporate covariates in a multi-state model and obtain predictions for a specific covariates pattern; let's demonstrate this by incorporating sex in the model above.
+First, we fit a second model:
+
+```{r fit.cov}
+cav.msm.cov <- msm(
+  formula = state ~ years,
+  subject = PTNUM,
+  data = cav,
+  covariates = ~sex,
+  qmatrix = twoway4.q,
+  deathexact = 4
+)
+cav.msm.cov
+```
+
+Then, we can use the same functionality as before to obtain stacked probabilities plots:
+
+```{r stacked.plot.cov}
+stacked.plot.msm(model = cav.msm.cov, tstart = 0, tforward = 5) +
+  labs(title = "Predictions for average covariates")
+```
+
+By default, this will set all covariates to their average value (as in `pmatrix.msm()`); we can, however, pass specific covariates patterns that we want to predict for:
+
+```{r stacked.plot.cov.sex0}
+stacked.plot.msm(model = cav.msm.cov, tstart = 0, tforward = 5, covariates = list(sex = 0)) +
+  labs(title = "Predictions for 'sex = 0'")
+```
+
+```{r stacked.plot.cov.sex1}
+stacked.plot.msm(model = cav.msm.cov, tstart = 0, tforward = 5, covariates = list(sex = 1)) +
+  labs(title = "Predictions for 'sex = 1'")
+```
+
+This way we can provide clinically meaningful predictions that highlight the effect of covariates of interest on state occupancy probabilities over time.
+
+# Model with Piecewise-Constant Intensities
+
+By default, the {msm} package assumes constant (i.e., exponential) baseline transition intensities.
+This means that predictions at t years will be the same, irrespectively of when the starting point is:
+
+```{r stacked.plot.two.times}
+stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 3)
+stacked.plot.msm(model = cav.msm, tstart = 5, tforward = 3, start0 = FALSE)
+```
+
+We can relax this assumption by allowing piecewise-constant baseline transition rates.
+This can be done by setting the `pci` argument of `msm()`:
+
+```{r fit.pw}
+cav.msm.pw <- msm(
+  formula = state ~ years,
+  subject = PTNUM,
+  data = cav,
+  qmatrix = twoway4.q,
+  deathexact = 4,
+  pci = quantile(x = cav$years, probs = c(0.25, 0.50, 0.75))
+)
+cav.msm.pw
+```
+
+Specifically, here we set cut-points at quartiles of the observed distribution of (possibly censored) transition times.
+We ignore the warning about _non-convergence_ for now - in practice, we should investigate this and try a different optimiser or "consider tightening the tolerance criteria for convergence" (according to the documentation of `msm()`).
+
+First, we can do a likelihood ratio test to check whether the model with piecewise-constant intensities fits the data better:
+
+```{r lrt}
+lrtest.msm(cav.msm, cav.msm.pw)
+```
+
+The test is statistically significant at any usual level, thus the more flexible model seems appropriate.
+Predictions of transition probabilities will now depend on the starting point `tstart`, even though `tforward` is the same:
+
+```{r stacked.plot.two.times.pw}
+stacked.plot.msm(model = cav.msm.pw, tstart = 0, tforward = 3)
+stacked.plot.msm(model = cav.msm.pw, tstart = 5, tforward = 3, start0 = FALSE)
+```
+
+As expected, we see that the predicted probabilities between 0 and 3 units of time are now different compared to those between 5 and 8, given the (now) non-constant baseline intensities. 
+
+# Excluding States
+
+The {msm.stacked} package also include functionality to calculate (and plot) transition probabilities from only certain states of interest.
+For instance, the models we fit in the previous examples includes an absorbing state, _State 4_, from which there will be no transitions.
+For this example, we will be using the model with constant baseline transition rates (`cav.msm`).
+
+Let's start with a utility function to determine the names of the state of a {msm} model fit, which is included in {msm.stacked}.
+This is called `states.msm()`:
+
+```{r states}
+states.msm(cav.msm)
+```
+
+Now we have the correct names used by {msm} to define each state.
+Let's calculate transitions probabilities from all states, but excluding the absorbing _State 4_:
+
+```{r transitions.no.absorbing}
+stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 3, exclude = "State 4")
+```
+
+As you can see, transitions from the state passed to `exclude` are not reported.
+We can also exclude more than one state, for instance if we want to calculate only transitions from _State 1_:
+
+```{r transitions.only.one}
+stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 3, exclude = c("State 2", "State 3", "State 4"))
+```
+
+Of course, this functionality is also included in the plotting function:
+
+```{r plot.no.absorbing}
+stacked.plot.msm(model = cav.msm, tstart = 0, tforward = 10, exclude = "State 4") +
+  theme(legend.position = "bottom")
+```

@@ -6,3 +6,6 @@ website.R
 website.md
 p_stacked.png
 p_stacked_square.png
+inst/doc
+/doc/
+/Meta/

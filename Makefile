@@ -4,9 +4,10 @@ docs:
 	make style
 	R -e "devtools::document()"
 	R -e "devtools::build_readme()"
+	R -e "devtools::build_vignettes()"
 
 style:
-	R -e "styler::style_dir(filetype = c('r', 'rmd'))"
+	R -e "styler::style_dir(filetype = c('r', 'rmd', 'qmd'))"
 
 test:
 	make docs

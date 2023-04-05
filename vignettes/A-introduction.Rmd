@@ -2,7 +2,7 @@
 title: "An Introduction to the {msm.stacked} Package"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{An introduction to the msm.stacked package}
+  %\VignetteIndexEntry{An Introduction to the {msm.stacked} Package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,8 +14,7 @@ knitr::opts_chunk$set(
   out.width = "100%",
   fig.width = 6,
   fig.height = 4,
-  dpi = 300,
-  dev = "ragg_png"
+  dpi = 200
 )
 ```
 

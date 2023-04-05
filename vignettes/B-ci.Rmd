@@ -2,7 +2,7 @@
 title: "Confidence Intervals for Transition Probabilities"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Confidence intervals for transition probabilities}
+  %\VignetteIndexEntry{Confidence Intervals for Transition Probabilities}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -16,8 +16,7 @@ knitr::opts_chunk$set(
   out.width = "100%",
   fig.width = 6,
   fig.height = 4,
-  dpi = 300,
-  dev = "ragg_png"
+  dpi = 200
 )
 ```
 
@@ -49,7 +48,7 @@ cav.msm
 If needed, check that vignette with the following R code:
 
 ```r
-vignette("01-introduction", package = "msm.stacked")
+vignette("A-introduction", package = "msm.stacked")
 ```
 
 As demonstrated there, we can use the `stacked.data.msm()` function to calculate transition probabilities over time, say, at 1 to 5 years:
@@ -97,6 +96,10 @@ ggplot(sdd.ci, aes(x = t, y = p)) +
   geom_line(aes(color = to)) +
   facet_wrap(~from)
 ```
+
+...and there you have it.
+
+Finally, note that this functionality supports different confidence levels (via the `cl` argument, which is passed down to `msm::pmatrix.msm()`), multi-state models with covariates, and everything else that is supported by `stacked.data.msm()` and `msm::pmatrix.msm()`.
 
 # References
 

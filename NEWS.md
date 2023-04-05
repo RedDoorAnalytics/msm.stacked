@@ -1,5 +1,12 @@
 # {msm.stacked} development version
 
+### New features
+
+- It is now possible to calculate confidence intervals for the transition probabilities returned by `stacked.data.msm()` via the `ci` argument.
+  This supports all methods implemented in `msm::pmatrix.msm()`, and can be used with multi-state models with and without covariates.
+
+### Housekeeping
+
 - Updated README file.
 - Updated copyright year.
 

@@ -4,7 +4,15 @@
 \alias{stacked.data.msm}
 \title{Calculate State Occupancy Probabilities Over Time from and to Every State}
 \usage{
-stacked.data.msm(model, tstart, tforward, tseqn = 5, exclude = NULL, ...)
+stacked.data.msm(
+  model,
+  tstart,
+  tforward,
+  tseqn = 5,
+  exclude = NULL,
+  ci = c("none", "normal", "bootstrap"),
+  ...
+)
 }
 \arguments{
 \item{model}{A multi-state model fitted using \code{\link[msm:msm]{msm::msm()}}.}
@@ -26,10 +34,15 @@ to be excluded. This is useful, for example, to avoid returning transitions from
 state; the \code{\link[=states.msm]{states.msm()}} function can be helpful to identify the names of the states for a
 given model. The \code{exclude} parameter defaults to \code{NULL}, where all transitions are returned.}
 
+\item{ci}{Should confidence intervals for transition probabilities over time be returned? Possible
+values are \code{"normal"}, \code{"bootstrap"}, or \code{"none"} (the default). For more details on the methods,
+refer to \code{\link[msm:pmatrix.msm]{msm::pmatrix.msm()}}.}
+
 \item{...}{Additional arguments to be passed to \code{\link[msm:pmatrix.msm]{msm::pmatrix.msm()}}. This is useful,
 for example, if calculating predictions for a certain covariates pattern - otherwise,
 as in \code{\link[msm:pmatrix.msm]{msm::pmatrix.msm()}}, predictions will be assuming means of the covariates in
-the data.}
+the data. Parameters used to control the confidence intervals, if requested, can also be
+passed in \code{...}.}
 }
 \value{
 A data frame with the following columns:
@@ -64,8 +77,7 @@ cav.msm <- msm(
   subject = PTNUM,
   data = cav,
   qmatrix = twoway4.q,
-  deathexact = 4,
-  fixedpars = TRUE # only to speed up examples!
+  deathexact = 4
 )
 
 # Predictions from time 0 to time 1, with 3 mid-points:
@@ -113,6 +125,13 @@ stacked.data.msm(
   tforward = 5,
   exclude = c("State 2", "State 3", "State 4")
 )
+
+### Example 4:
+# Confidence intervals for transition probabilities, using the "normal" method:
+p1.ci <- stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 3, ci = "normal")
+head(p1.ci)
+# Compare with:
+head(p1)
 }
 \seealso{
 \code{\link[msm:msm]{msm::msm()}}, \code{\link[msm:pmatrix.msm]{msm::pmatrix.msm()}}

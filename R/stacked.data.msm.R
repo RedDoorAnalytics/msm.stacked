@@ -18,10 +18,14 @@
 #'   to be excluded. This is useful, for example, to avoid returning transitions from an absorbing
 #'   state; the [states.msm()] function can be helpful to identify the names of the states for a
 #'   given model. The `exclude` parameter defaults to `NULL`, where all transitions are returned.
+#' @param ci Should confidence intervals for transition probabilities over time be returned? Possible
+#'   values are `"normal"`, `"bootstrap"`, or `"none"` (the default). For more details on the methods,
+#'   refer to [msm::pmatrix.msm()].
 #' @param ... Additional arguments to be passed to [msm::pmatrix.msm()]. This is useful,
 #'   for example, if calculating predictions for a certain covariates pattern - otherwise,
 #'   as in [msm::pmatrix.msm()], predictions will be assuming means of the covariates in
-#'   the data.
+#'   the data. Parameters used to control the confidence intervals, if requested, can also be
+#'   passed in `...`.
 #'
 #' @return A data frame with the following columns:
 #' - `from`, denoting the starting state;
@@ -52,8 +56,7 @@
 #'   subject = PTNUM,
 #'   data = cav,
 #'   qmatrix = twoway4.q,
-#'   deathexact = 4,
-#'   fixedpars = TRUE # only to speed up examples!
+#'   deathexact = 4
 #' )
 #'
 #' # Predictions from time 0 to time 1, with 3 mid-points:
@@ -101,7 +104,14 @@
 #'   tforward = 5,
 #'   exclude = c("State 2", "State 3", "State 4")
 #' )
-stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, exclude = NULL, ...) {
+#'
+#' ### Example 4:
+#' # Confidence intervals for transition probabilities, using the "normal" method:
+#' p1.ci <- stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 3, ci = "normal")
+#' head(p1.ci)
+#' # Compare with:
+#' head(p1)
+stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, exclude = NULL, ci = c("none", "normal", "bootstrap"), ...) {
   # Check arguments
   arg_checks <- checkmate::makeAssertCollection()
   # 'model' must be of class 'msm'
@@ -120,14 +130,34 @@ stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, exclude = NULL,
   # Report
   if (!arg_checks$isEmpty()) checkmate::reportAssertions(arg_checks)
 
+  # Match values of `ci` (should not be needed as it is then checked by msm::pmatrix.msm but doesn't harm I guess)
+  ci <- match.arg(ci)
+
   # Sequence of `tseqn` equally-spaced points for forward predictions
   tseq <- seq(0, tforward, length.out = tseqn)
 
   # Calculate pmatrix at each time point forward
   preds <- lapply(X = tseq, FUN = function(.t) {
-    out <- msm::pmatrix.msm(x = model, t = .t, t1 = tstart, ...)
-    class(out) <- "matrix"
-    out <- as.data.frame.table(out)
+    if (ci == "none") {
+      # If no confidence intervals are required, use the old logic
+      out <- msm::pmatrix.msm(x = model, t = .t, t1 = tstart, ci = ci, ...)
+      class(out) <- "matrix"
+      out <- as.data.frame.table(out)
+    } else {
+      # Otherwise, `out` will be a list with
+      # - out$estimates = same as the above if ci = "none"
+      # - out$L = lower bounds of confidence intervals
+      # - out$U = upper bounds of confidence intervals
+      out <- msm::pmatrix.msm(x = model, t = .t, t1 = tstart, ci = ci, ...)
+      conf.low <- out$L
+      conf.high <- out$U
+      out <- out$estimates
+      out <- as.data.frame.table(out)
+      conf.low <- as.data.frame.table(conf.low)
+      out[["conf.low"]] <- conf.low[["Freq"]]
+      conf.high <- as.data.frame.table(conf.high)
+      out[["conf.high"]] <- conf.high[["Freq"]]
+    }
     names(out)[names(out) == "Var1"] <- "from"
     names(out)[names(out) == "Var2"] <- "to"
     names(out)[names(out) == "Freq"] <- "p"

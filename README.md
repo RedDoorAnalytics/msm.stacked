@@ -62,8 +62,8 @@ twoway4.q
 #> [4,]  0.000  0.000  0.000 0.000
 ```
 
-This is then used to provide starting values for the model without any
-additional covariate:
+This is then used to provide starting values for the model without
+additional covariates:
 
 ``` r
 cav.msm <- msm(

@@ -54,7 +54,7 @@ twoway4.q <- rbind(
 twoway4.q
 ```
 
-This is then used to provide starting values for the model without any additional covariate:
+This is then used to provide starting values for the model without additional covariates:
 
 ```{r fit}
 cav.msm <- msm(

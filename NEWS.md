@@ -1,4 +1,4 @@
-# {msm.stacked} development version
+# {msm.stacked} 0.0.2
 
 ### New features
 

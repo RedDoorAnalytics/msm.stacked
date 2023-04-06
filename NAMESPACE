@@ -3,6 +3,7 @@
 export(stacked.data.msm)
 export(stacked.plot.msm)
 export(states.msm)
+import(checkmate)
 import(ggplot2)
 import(msm)
 import(rlang)

@@ -7,26 +7,27 @@ twoway4.q <- rbind(
   c(0, 0.25, -0.5, 0.25),
   c(0, 0, 0, 0)
 )
-cav.msm <- msm(
+cav.msm.pw <- msm(
   formula = state ~ years,
   subject = PTNUM,
-  covariates = ~sex,
   data = cav,
   qmatrix = twoway4.q,
-  deathexact = 4
+  deathexact = 4,
+  pci = quantile(x = cav$years, probs = seq(3) / 3),
+  method = "L-BFGS-B",
+  control = list(trace = 1, REPORT = 1, maxit = 10000, factr = 1e10)
 )
 
 # Predictions from time 0 to time 1, with 3 mid-points:
-p0 <- stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 10, ci = "normal", covariates = list(sex = 0))
-p1 <- stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 10, ci = "normal", covariates = list(sex = 1))
+p0 <- stacked.data.msm(model = cav.msm.pw, tstart = 0, tforward = 3, tseqn = 30, ci = "normal")
+p1 <- stacked.data.msm(model = cav.msm.pw, tstart = 3, tforward = 3, tseqn = 30, ci = "normal")
 
-# See for instance:
-ggplot(p0, aes(x = t, y = p, ymin = conf.low, ymax = conf.high)) +
+ggplot(p0, aes(x = tstart + t, y = p, ymin = conf.low, ymax = conf.high)) +
   geom_ribbon(aes(fill = to), alpha = 0.2) +
   geom_line(aes(color = to)) +
   facet_wrap(~from)
 
-ggplot(p1, aes(x = t, y = p, ymin = conf.low, ymax = conf.high)) +
+ggplot(p1, aes(x = tstart + t, y = p, ymin = conf.low, ymax = conf.high)) +
   geom_ribbon(aes(fill = to), alpha = 0.2) +
   geom_line(aes(color = to)) +
   facet_wrap(~from)

@@ -20,7 +20,7 @@ You can install the development version of {msm.stacked} from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("RedDoorAnalytics/msm.stacked")
+devtools::install_github("RedDoorAnalytics/msm.stacked", build_vignettes = TRUE)
 ```
 
 # Example

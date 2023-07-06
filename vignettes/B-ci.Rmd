@@ -86,7 +86,7 @@ Note that we set the additional argument `progress = FALSE` to omit displaying a
 The method implemented in `stacked.data.msm()` is based on that implemented in {msm}'s `pmatrix.msm()`, but ensuring that each single replicate is used across all time points that we predict for. 
 It is a parametric bootstrap approach with number of repetitions defined by the `B` argument of `stacked.data.msm()` (defaulting to 1,000) and calculating confidence intervals with the percentile method.
 According to the documentation of {msm}, this approach is based on "[...] simulating `B` random vectors from the asymptotic multivariate normal distribution implied by the maximum likelihood estimates (and covariance matrix) of the log transition intensities and covariate effects, then calculating the resulting transition probability matrix for each replicate.".
-This is discussed further in the paper by [Mandel (2013)](https://doi.org/10.1080/00031305.2013.783880).
+This is discussed in more detail in the paper by Mandel (2013, see references below).
 
 After calculating the confidence intervals, we can include those in a plot:
 

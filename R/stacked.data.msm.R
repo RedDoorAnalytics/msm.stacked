@@ -158,6 +158,13 @@ stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, exclude = NULL,
   # Sequence of `tseqn` equally-spaced points for forward predictions
   tseq <- seq(0, tforward, length.out = tseqn)
 
+  # If model did not have asymptotic SEs we cannot do conf.int
+  # So, we fail gracefully
+  if (!model$foundse) {
+    message("Asymptotic standard errors not available in fitted model. Continuing with conf.int = FALSE...")
+    conf.int <- FALSE
+  }
+
   # If confidence intervals are required, we need to resample models once per value of tseq
   if (conf.int) {
     resamp_models <- .resample_models(x = model, B = B)

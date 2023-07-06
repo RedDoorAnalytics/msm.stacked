@@ -30,3 +30,17 @@ ggplot(p1, aes(x = tstart + t, y = p, ymin = conf.low, ymax = conf.high)) +
   geom_ribbon(aes(fill = to), alpha = 0.2) +
   geom_line(aes(color = to)) +
   facet_wrap(~from)
+
+# Without hessian:
+cav.msm.pw.noh <- msm(
+  formula = state ~ years,
+  subject = PTNUM,
+  data = cav,
+  qmatrix = twoway4.q,
+  deathexact = 4,
+  pci = median(cav$years),
+  control = list(trace = 1, REPORT = 1, maxit = 10000),
+  hessian = FALSE
+)
+p0 <- stacked.data.msm(model = cav.msm.pw.noh, tstart = 0, tforward = 3, tseqn = 30, conf.int = TRUE, B = 100)
+p0

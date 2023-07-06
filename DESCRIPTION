@@ -1,7 +1,7 @@
 Package: msm.stacked
 Type: Package
 Title: Stacked Probabilities Plots and Transition Probabilities for 'msm' Multi-State Models
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: c(
   person(given = "Alessandro", 
          family = "Gasparini", 

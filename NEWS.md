@@ -1,3 +1,16 @@
+# {msm.stacked} 0.0.3
+
+### Breaking changes
+
+- Updated algorithm to estimate confidence intervals for transition probabilities to be more consistent across time-points.
+  This is based on a parametric bootstrap approach, where we use each resample along the entire time requested for prediction, with confidence intervals then calculated using the percentile method.
+  The arguments of `stacked.data.msm()` have been updated accordingly, and names have been adjusted to not collide with {msm}.
+  Please read the documentation page at `?stacked.data.msm()` to get familiar with the new arguments.
+
+### Housekeeping
+
+- Removed a URL in the vignette on confidence intervals that was giving a `403 Forbidden` error. 
+
 # {msm.stacked} 0.0.2
 
 ### New features

@@ -170,14 +170,14 @@ stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, exclude = NULL,
 
   # Calculate pmatrix at each time point forward
   preds <- lapply(X = tseq, FUN = function(.t) {
+    # Point estimates
+    point_estimate <- .wrap_pmatrix.msm(t = .t, model = model, t1 = tstart, ...)
     if (conf.int) {
-      # Point estimates
-      point_estimate <- .wrap_pmatrix.msm(t = .t, model = model, t1 = tstart)
       # Confidence intervals
       # Setup progress bar, if required
       repl_point_estimate <- sapply(X = resamp_models, FUN = function(x) {
         # Calculate values for this model replicate
-        out <- .wrap_pmatrix.msm(t = .t, model = x, t1 = tstart)
+        out <- .wrap_pmatrix.msm(t = .t, model = x, t1 = tstart, ...)
         # Increment progress bar
         if (progress) utils::setTxtProgressBar(pb = pb, value = pb$getVal() + 1)
         # Return
@@ -188,12 +188,11 @@ stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, exclude = NULL,
       colnames(ci) <- c("conf.low", "conf.high")
       # Combine
       out <- cbind(point_estimate, ci)
-    } else {
-      # Point estimates only
-      out <- .wrap_pmatrix.msm(t = .t, model = model, t1 = tstart)
+      # Return
+      return(out)
     }
-    # Return
-    return(out)
+    # Else, return point estimates only
+    return(point_estimate)
   })
 
   # Close progress bar

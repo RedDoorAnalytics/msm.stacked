@@ -21,7 +21,9 @@ RoxygenNote: 7.2.3
 Imports:
   checkmate,
   ggplot2,
+  matrixStats,
   msm,
+  mvtnorm,
   rlang (>= 0.4.0)
 Suggests:
   covr,

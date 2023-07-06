@@ -22,7 +22,7 @@
   params <- params[, !duplicated(abs(x$paramdata$constr)), drop = FALSE][, abs(x$paramdata$constr), drop = FALSE] * rep(sign(x$paramdata$constr), each = B)
   sim.stat <- vector(B, mode = "list")
   for (i in 1:B) {
-    x.rep <- updatepars.msm(x, params[i, ])
+    x.rep <- msm::updatepars.msm(x, params[i, ])
     sim.stat[[i]] <- stat(x.rep)
   }
   return(sim.stat)

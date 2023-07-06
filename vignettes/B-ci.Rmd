@@ -21,6 +21,7 @@ knitr::opts_chunk$set(
 ```
 
 As of version 0.0.2, the {msm.stacked} package can produce confidence intervals for the transition probabilities over time as computed via the `stacked.data.msm()` function.
+This has been revamped and improved in version 0.0.3.
 
 To illustrate this functionality, we replicate the example from the introductory vignette:
 
@@ -73,20 +74,19 @@ ggplot(sdd, aes(x = t, y = p)) +
 In the plot above, we can see transition probabilities over time from and to each state.
 We might however be interested in including pointwise confidence intervals, over time, to visualise uncertainty around our estimates.
 
-This can now be easily done using the new `ci` argument implemented in `stacked.data.msm()`:
+This can now be easily done by setting the `conf.int` argument to `TRUE`:
 
 ```{r stacked.data.ci}
-sdd.ci <- stacked.data.msm(model = cav.msm, tstart = 0, tforward = 5, tseqn = 20, ci = "normal")
+sdd.ci <- stacked.data.msm(model = cav.msm, tstart = 0, tforward = 5, tseqn = 20, conf.int = TRUE, progress = FALSE)
 str(sdd.ci)
 ```
 
-Note that now two additional columns are available, `conf.low` and `conf.high` for the lower and upper bound of pointwise confidence intervals, respectively.
+Note that we set the additional argument `progress = FALSE` to omit displaying a progress bar, and that now two additional columns are available, `conf.low` and `conf.high` for the lower and upper bound of pointwise confidence intervals, respectively.
 
-Here we use the `ci = "normal"` method, which, according to the documentation of {msm}, "_[...] calculate a confidence interval for the transition probabilities by simulating `B` random vectors from the asymptotic multivariate normal distribution implied by the maximum likelihood estimates (and covariance matrix) of the log transition intensities and covariate effects, then calculating the resulting transition probability matrix for each replicate._"
+The method implemented in `stacked.data.msm()` is based on that implemented in {msm}'s `pmatrix.msm()`, but ensuring that each single replicate is used across all time points that we predict for. 
+It is a parametric bootstrap approach with number of repetitions defined by the `B` argument of `stacked.data.msm()` (defaulting to 1,000) and calculating confidence intervals with the percentile method.
+According to the documentation of {msm}, this approach is based on "[...] simulating `B` random vectors from the asymptotic multivariate normal distribution implied by the maximum likelihood estimates (and covariance matrix) of the log transition intensities and covariate effects, then calculating the resulting transition probability matrix for each replicate.".
 This is discussed further in the paper by [Mandel (2013)](https://doi.org/10.1080/00031305.2013.783880).
-
-Other possible values for the `ci` argument are `ci = "bootstrap"`, where non-parametric boostrap refitting is used, and `ci = "none"` (the default), where no confidence intervals are calculated.
-Refer to the documentation of `msm::pmatrix.msm()` for more details.
 
 After calculating the confidence intervals, we can include those in a plot:
 
@@ -99,7 +99,7 @@ ggplot(sdd.ci, aes(x = t, y = p)) +
 
 ...and there you have it.
 
-Finally, note that this functionality supports different confidence levels (via the `cl` argument, which is passed down to `msm::pmatrix.msm()`), multi-state models with covariates, and everything else that is supported by `stacked.data.msm()` and `msm::pmatrix.msm()`.
+Finally, note that this functionality supports different confidence levels (via the `alpha` argument, which is passed down to `msm::pmatrix.msm()`), multi-state models with covariates, and everything else that is supported by `stacked.data.msm()` and `msm::pmatrix.msm()` and passed down via the `...` argument.
 
 # References
 

@@ -120,8 +120,17 @@
 #' )
 #'
 #' ### Example 4:
-#' # Confidence intervals for transition probabilities, using B = 10 replicates to keep it fast:
-#' p1.ci <- stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 3, conf.int = TRUE, B = 10)
+#' # Confidence intervals for transition probabilities,
+#' # using B = 10 replicates to keep it fast:
+#' p1.ci <- stacked.data.msm(
+#'   model = cav.msm,
+#'   tstart = 0,
+#'   tforward = 1,
+#'   tseqn = 3,
+#'   conf.int = TRUE,
+#'   B = 10,
+#'   progress = FALSE
+#' )
 #' head(p1.ci)
 #' # Compare with:
 #' head(p1)

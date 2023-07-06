@@ -18,8 +18,8 @@ cav.msm.pw <- msm(
 )
 
 # Predictions from time 0 to time 1, with 3 mid-points:
-p0 <- stacked.data.msm(model = cav.msm.pw, tstart = 0, tforward = 3, tseqn = 30, conf.int = TRUE)
-p1 <- stacked.data.msm(model = cav.msm.pw, tstart = 3, tforward = 3, tseqn = 30, conf.int = TRUE)
+p0 <- stacked.data.msm(model = cav.msm.pw, tstart = 0, tforward = 3, tseqn = 30, conf.int = TRUE, B = 100)
+p1 <- stacked.data.msm(model = cav.msm.pw, tstart = 3, tforward = 3, tseqn = 30, conf.int = TRUE, B = 100)
 
 ggplot(p0, aes(x = tstart + t, y = p, ymin = conf.low, ymax = conf.high)) +
   geom_ribbon(aes(fill = to), alpha = 0.2) +

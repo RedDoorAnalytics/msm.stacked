@@ -18,22 +18,36 @@
 #'   to be excluded. This is useful, for example, to avoid returning transitions from an absorbing
 #'   state; the [states.msm()] function can be helpful to identify the names of the states for a
 #'   given model. The `exclude` parameter defaults to `NULL`, where all transitions are returned.
-#' @param ci Should confidence intervals for transition probabilities over time be returned? Possible
-#'   values are `"normal"`, `"bootstrap"`, or `"none"` (the default). For more details on the methods,
-#'   refer to [msm::pmatrix.msm()].
+#' @param conf.int Boolean value denoting whether confidence intervals for transition probabilities
+#'   over time should be returned. This uses a parametric bootstrap approach and the percentile method,
+#'   similar to that of `ci = "normal"` in [msm::pmatrix.msm()], but modified to ensure that a single
+#'   model resample is used throughout all time points.
+#'   Defaults to `FALSE`.
+#' @param B Number of replication for the parametric boostrap procedure used to calculate
+#'   confidence intervals if `conf.int = TRUE`.
+#'   Defaults to 1,000.
+#' @param alpha Desired significance level (1 - confidence level) for the confidence intervals if
+#'   `conf.int = TRUE`.
+#'   Defaults to 0.05
+#' @param progress Boolean denoting whether a progress bar should be printed to show the status of
+#'   the parametric bootstrap.
+#'   Defaults to `TRUE` if `conf.int = TRUE`, `FALSE` otherwise.
 #' @param ... Additional arguments to be passed to [msm::pmatrix.msm()]. This is useful,
 #'   for example, if calculating predictions for a certain covariates pattern - otherwise,
 #'   as in [msm::pmatrix.msm()], predictions will be assuming means of the covariates in
-#'   the data. Parameters used to control the confidence intervals, if requested, can also be
-#'   passed in `...`.
+#'   the data.
 #'
-#' @return A data frame with the following columns:
+#' @return
+#' A data frame with the following columns:
 #' - `from`, denoting the starting state;
 #' - `to`, denoting the destination state;
 #' - `p`, denoting the probability of being in state `to` starting from state `from` at
 #'   time `t`;
 #' - `tstart`, denoting the starting point for the predictions;
 #' - `t`, denoting the times for the predicted probabilities `p`.
+#'
+#' If `conf.int = TRUE`, then two columns with the lower and upper confidence interval
+#' bounds will be included as well: `conf.low`, `conf.high`.
 #'
 #' @seealso [msm::msm()], [msm::pmatrix.msm()]
 #'
@@ -106,12 +120,12 @@
 #' )
 #'
 #' ### Example 4:
-#' # Confidence intervals for transition probabilities, using the "normal" method:
-#' p1.ci <- stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 3, ci = "normal")
+#' # Confidence intervals for transition probabilities, using B = 10 replicates to keep it fast:
+#' p1.ci <- stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 3, conf.int = TRUE, B = 10)
 #' head(p1.ci)
 #' # Compare with:
 #' head(p1)
-stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, exclude = NULL, conf.int = FALSE, B = 1000, alpha = 0.05, progress = TRUE, ...) {
+stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, exclude = NULL, conf.int = FALSE, B = 1000, alpha = 0.05, progress = conf.int, ...) {
   # Check arguments
   arg_checks <- checkmate::makeAssertCollection()
   # 'model' must be of class 'msm'
@@ -132,6 +146,11 @@ stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, exclude = NULL,
   # 'B' must be a single integer, greater than zero
   checkmate::assert_number(x = B, add = arg_checks, .var.name = "B")
   checkmate::assert_true(x = (B > 0), add = arg_checks, .var.name = "B > 0")
+  # 'alpha' must be a single number between 0 and 1
+  checkmate::assert_number(x = alpha, add = arg_checks, .var.name = "alpha")
+  checkmate::assert_true(x = (alpha > 0 & alpha < 1), add = arg_checks, .var.name = "alpha in [0, 1]")
+  # 'progress' must be a single boolean
+  checkmate::assert_logical(x = progress, len = 1, add = arg_checks, .var.name = "progress")
 
   # Report
   if (!arg_checks$isEmpty()) checkmate::reportAssertions(arg_checks)
@@ -145,7 +164,9 @@ stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, exclude = NULL,
   }
 
   # Setup progress bar if required
-  if (progress) pb <- utils::txtProgressBar(min = 0, max = B * length(tseq), style = 3)
+  if (conf.int & progress) {
+    pb <- utils::txtProgressBar(min = 0, max = B * length(tseq), style = 3)
+  }
 
   # Calculate pmatrix at each time point forward
   preds <- lapply(X = tseq, FUN = function(.t) {
@@ -176,7 +197,7 @@ stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, exclude = NULL,
   })
 
   # Close progress bar
-  if (progress) close(pb)
+  if (conf.int & progress) close(pb)
 
   # Bind rows
   preds <- do.call(rbind.data.frame, preds)

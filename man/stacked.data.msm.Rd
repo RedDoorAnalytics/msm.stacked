@@ -10,7 +10,10 @@ stacked.data.msm(
   tforward,
   tseqn = 5,
   exclude = NULL,
-  ci = c("none", "normal", "bootstrap"),
+  conf.int = FALSE,
+  B = 1000,
+  alpha = 0.05,
+  progress = conf.int,
   ...
 )
 }
@@ -34,15 +37,28 @@ to be excluded. This is useful, for example, to avoid returning transitions from
 state; the \code{\link[=states.msm]{states.msm()}} function can be helpful to identify the names of the states for a
 given model. The \code{exclude} parameter defaults to \code{NULL}, where all transitions are returned.}
 
-\item{ci}{Should confidence intervals for transition probabilities over time be returned? Possible
-values are \code{"normal"}, \code{"bootstrap"}, or \code{"none"} (the default). For more details on the methods,
-refer to \code{\link[msm:pmatrix.msm]{msm::pmatrix.msm()}}.}
+\item{conf.int}{Boolean value denoting whether confidence intervals for transition probabilities
+over time should be returned. This uses a parametric bootstrap approach and the percentile method,
+similar to that of \code{ci = "normal"} in \code{\link[msm:pmatrix.msm]{msm::pmatrix.msm()}}, but modified to ensure that a single
+model resample is used throughout all time points.
+Defaults to \code{FALSE}.}
+
+\item{B}{Number of replication for the parametric boostrap procedure used to calculate
+confidence intervals if \code{conf.int = TRUE}.
+Defaults to 1,000.}
+
+\item{alpha}{Desired significance level (1 - confidence level) for the confidence intervals if
+\code{conf.int = TRUE}.
+Defaults to 0.05}
+
+\item{progress}{Boolean denoting whether a progress bar should be printed to show the status of
+the parametric bootstrap.
+Defaults to \code{TRUE} if \code{conf.int = TRUE}, \code{FALSE} otherwise.}
 
 \item{...}{Additional arguments to be passed to \code{\link[msm:pmatrix.msm]{msm::pmatrix.msm()}}. This is useful,
 for example, if calculating predictions for a certain covariates pattern - otherwise,
 as in \code{\link[msm:pmatrix.msm]{msm::pmatrix.msm()}}, predictions will be assuming means of the covariates in
-the data. Parameters used to control the confidence intervals, if requested, can also be
-passed in \code{...}.}
+the data.}
 }
 \value{
 A data frame with the following columns:
@@ -54,6 +70,9 @@ time \code{t};
 \item \code{tstart}, denoting the starting point for the predictions;
 \item \code{t}, denoting the times for the predicted probabilities \code{p}.
 }
+
+If \code{conf.int = TRUE}, then two columns with the lower and upper confidence interval
+bounds will be included as well: \code{conf.low}, \code{conf.high}.
 }
 \description{
 The \code{\link[=stacked.data.msm]{stacked.data.msm()}} function can be used to calculate
@@ -127,8 +146,8 @@ stacked.data.msm(
 )
 
 ### Example 4:
-# Confidence intervals for transition probabilities, using the "normal" method:
-p1.ci <- stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 3, ci = "normal")
+# Confidence intervals for transition probabilities, using B = 10 replicates to keep it fast:
+p1.ci <- stacked.data.msm(model = cav.msm, tstart = 0, tforward = 1, tseqn = 3, conf.int = TRUE, B = 10)
 head(p1.ci)
 # Compare with:
 head(p1)

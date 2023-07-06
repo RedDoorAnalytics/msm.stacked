@@ -111,7 +111,7 @@
 #' head(p1.ci)
 #' # Compare with:
 #' head(p1)
-stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, exclude = NULL, ci = c("none", "normal", "bootstrap"), ...) {
+stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, exclude = NULL, conf.int = FALSE, B = 1000, alpha = 0.05, progress = TRUE, ...) {
   # Check arguments
   arg_checks <- checkmate::makeAssertCollection()
   # 'model' must be of class 'msm'
@@ -127,44 +127,56 @@ stacked.data.msm <- function(model, tstart, tforward, tseqn = 5, exclude = NULL,
   # 'tstart', 'tforward' must be greater than zero
   checkmate::assert_true(x = (tstart >= 0), add = arg_checks, .var.name = "tstart >= 0")
   checkmate::assert_true(x = (tforward > 0), add = arg_checks, .var.name = "tforward > 0")
+  # 'ci' must be a single boolean
+  checkmate::assert_logical(x = conf.int, len = 1, add = arg_checks, .var.name = "ci")
+  # 'B' must be a single integer, greater than zero
+  checkmate::assert_number(x = B, add = arg_checks, .var.name = "B")
+  checkmate::assert_true(x = (B > 0), add = arg_checks, .var.name = "B > 0")
+
   # Report
   if (!arg_checks$isEmpty()) checkmate::reportAssertions(arg_checks)
-
-  # Match values of `ci` (should not be needed as it is then checked by msm::pmatrix.msm but doesn't harm I guess)
-  ci <- match.arg(ci)
 
   # Sequence of `tseqn` equally-spaced points for forward predictions
   tseq <- seq(0, tforward, length.out = tseqn)
 
+  # If confidence intervals are required, we need to resample models once per value of tseq
+  if (conf.int) {
+    resamp_models <- .resample_models(x = model, B = B)
+  }
+
+  # Setup progress bar if required
+  if (progress) pb <- utils::txtProgressBar(min = 0, max = B * length(tseq), style = 3)
+
   # Calculate pmatrix at each time point forward
   preds <- lapply(X = tseq, FUN = function(.t) {
-    if (ci == "none") {
-      # If no confidence intervals are required, use the old logic
-      out <- msm::pmatrix.msm(x = model, t = .t, t1 = tstart, ci = ci, ...)
-      class(out) <- "matrix"
-      out <- as.data.frame.table(out)
+    if (conf.int) {
+      # Point estimates
+      point_estimate <- .wrap_pmatrix.msm(t = .t, model = model, t1 = tstart)
+      # Confidence intervals
+      # Setup progress bar, if required
+      repl_point_estimate <- sapply(X = resamp_models, FUN = function(x) {
+        # Calculate values for this model replicate
+        out <- .wrap_pmatrix.msm(t = .t, model = x, t1 = tstart)
+        # Increment progress bar
+        if (progress) utils::setTxtProgressBar(pb = pb, value = pb$getVal() + 1)
+        # Return
+        return(out$p)
+      }, simplify = "matrix")
+      # Calculate confidence intervals using the quantile method
+      ci <- matrixStats::rowQuantiles(x = repl_point_estimate, probs = c(alpha / 2, 1 - alpha / 2))
+      colnames(ci) <- c("conf.low", "conf.high")
+      # Combine
+      out <- cbind(point_estimate, ci)
     } else {
-      # Otherwise, `out` will be a list with
-      # - out$estimates = same as the above if ci = "none"
-      # - out$L = lower bounds of confidence intervals
-      # - out$U = upper bounds of confidence intervals
-      out <- msm::pmatrix.msm(x = model, t = .t, t1 = tstart, ci = ci, ...)
-      conf.low <- out$L
-      conf.high <- out$U
-      out <- out$estimates
-      out <- as.data.frame.table(out)
-      conf.low <- as.data.frame.table(conf.low)
-      out[["conf.low"]] <- conf.low[["Freq"]]
-      conf.high <- as.data.frame.table(conf.high)
-      out[["conf.high"]] <- conf.high[["Freq"]]
+      # Point estimates only
+      out <- .wrap_pmatrix.msm(t = .t, model = model, t1 = tstart)
     }
-    names(out)[names(out) == "Var1"] <- "from"
-    names(out)[names(out) == "Var2"] <- "to"
-    names(out)[names(out) == "Freq"] <- "p"
-    out[["tstart"]] <- tstart
-    out[["t"]] <- .t
+    # Return
     return(out)
   })
+
+  # Close progress bar
+  if (progress) close(pb)
 
   # Bind rows
   preds <- do.call(rbind.data.frame, preds)
